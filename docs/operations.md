@@ -78,6 +78,7 @@ The deployment credentials belong in Wrangler's login flow or a narrowly scoped 
 
 ```sh
 pnpm install --frozen-lockfile
+pnpm typegen
 pnpm lint:check
 pnpm test
 pnpm typecheck
@@ -112,6 +113,8 @@ The first release has no earlier production version to roll back to.
 
 `pnpm test` covers parameter injection, malformed pagination, combined filters, page boundaries, hidden/unpublished/future items, public user-field projection, safe links, non-executable Markdown, disabled service actions, and starter catalog structure.
 CI uses public build configuration only and never gets the editor token.
+It regenerates Sanity types, rejects generated-file drift, and runs non-incremental TypeScript checks plus the production OpenNext build.
+`tests/item-grid.types.ts` checks that the grid accepts ordinary item arrays and an intentionally disabled sponsor query's empty result without coupling its props to `never[]`.
 
 For a release, verify 1440, 768, and 390 pixel viewports with real browser interactions:
 

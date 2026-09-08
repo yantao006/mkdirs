@@ -18,7 +18,7 @@
     "build": "next build",
     "build:cloudflare": "opennextjs-cloudflare build",
     "deploy": "opennextjs-cloudflare deploy",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc --noEmit --incremental false",
     "lint:check": "biome check .",
     "test": "tsx --test tests/*.test.ts",
     "content:import": "node scripts/import-directory.mjs",
