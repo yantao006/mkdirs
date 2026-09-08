@@ -13,61 +13,6 @@
  */
 
 // Source: schema.json
-export type SanityImagePaletteSwatch = {
-  _type: "sanity.imagePaletteSwatch";
-  background?: string;
-  foreground?: string;
-  population?: number;
-  title?: string;
-};
-
-export type SanityImagePalette = {
-  _type: "sanity.imagePalette";
-  darkMuted?: SanityImagePaletteSwatch;
-  lightVibrant?: SanityImagePaletteSwatch;
-  darkVibrant?: SanityImagePaletteSwatch;
-  vibrant?: SanityImagePaletteSwatch;
-  dominant?: SanityImagePaletteSwatch;
-  lightMuted?: SanityImagePaletteSwatch;
-  muted?: SanityImagePaletteSwatch;
-};
-
-export type SanityImageDimensions = {
-  _type: "sanity.imageDimensions";
-  height?: number;
-  width?: number;
-  aspectRatio?: number;
-};
-
-export type SanityFileAsset = {
-  _id: string;
-  _type: "sanity.fileAsset";
-  _createdAt: string;
-  _updatedAt: string;
-  _rev: string;
-  originalFilename?: string;
-  label?: string;
-  title?: string;
-  description?: string;
-  altText?: string;
-  sha1hash?: string;
-  extension?: string;
-  mimeType?: string;
-  size?: number;
-  assetId?: string;
-  uploadId?: string;
-  path?: string;
-  url?: string;
-  source?: SanityAssetSourceData;
-};
-
-export type Geopoint = {
-  _type: "geopoint";
-  lat?: number;
-  lng?: number;
-  alt?: number;
-};
-
 export type BlockContent = Array<{
   children?: Array<{
     marks?: Array<string>;
@@ -96,6 +41,7 @@ export type BlockContent = Array<{
     _weak?: boolean;
     [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
   };
+  media?: unknown;
   hotspot?: SanityImageHotspot;
   crop?: SanityImageCrop;
   alt?: string;
@@ -192,6 +138,7 @@ export type BlogPost = {
       _weak?: boolean;
       [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
     };
+    media?: unknown;
     hotspot?: SanityImageHotspot;
     crop?: SanityImageCrop;
     alt?: string;
@@ -223,6 +170,7 @@ export type Collection = {
       _weak?: boolean;
       [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
     };
+    media?: unknown;
     hotspot?: SanityImageHotspot;
     crop?: SanityImageCrop;
     alt?: string;
@@ -319,6 +267,7 @@ export type Item = {
       _weak?: boolean;
       [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
     };
+    media?: unknown;
     hotspot?: SanityImageHotspot;
     crop?: SanityImageCrop;
     alt?: string;
@@ -331,6 +280,7 @@ export type Item = {
       _weak?: boolean;
       [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
     };
+    media?: unknown;
     hotspot?: SanityImageHotspot;
     crop?: SanityImageCrop;
     alt?: string;
@@ -376,63 +326,6 @@ export type Order = {
   };
   status?: "success" | "failed";
   date?: string;
-};
-
-export type SanityImageCrop = {
-  _type: "sanity.imageCrop";
-  top?: number;
-  bottom?: number;
-  left?: number;
-  right?: number;
-};
-
-export type SanityImageHotspot = {
-  _type: "sanity.imageHotspot";
-  x?: number;
-  y?: number;
-  height?: number;
-  width?: number;
-};
-
-export type SanityImageAsset = {
-  _id: string;
-  _type: "sanity.imageAsset";
-  _createdAt: string;
-  _updatedAt: string;
-  _rev: string;
-  originalFilename?: string;
-  label?: string;
-  title?: string;
-  description?: string;
-  altText?: string;
-  sha1hash?: string;
-  extension?: string;
-  mimeType?: string;
-  size?: number;
-  assetId?: string;
-  uploadId?: string;
-  path?: string;
-  url?: string;
-  metadata?: SanityImageMetadata;
-  source?: SanityAssetSourceData;
-};
-
-export type SanityAssetSourceData = {
-  _type: "sanity.assetSourceData";
-  name?: string;
-  id?: string;
-  url?: string;
-};
-
-export type SanityImageMetadata = {
-  _type: "sanity.imageMetadata";
-  location?: Geopoint;
-  dimensions?: SanityImageDimensions;
-  palette?: SanityImagePalette;
-  lqip?: string;
-  blurHash?: string;
-  hasAlpha?: boolean;
-  isOpaque?: boolean;
 };
 
 export type User = {
@@ -492,13 +385,109 @@ export type Code = {
 
 export type Markdown = string;
 
-export type MediaTag = {
+export type SanityImagePaletteSwatch = {
+  _type: "sanity.imagePaletteSwatch";
+  background?: string;
+  foreground?: string;
+  population?: number;
+  title?: string;
+};
+
+export type SanityImagePalette = {
+  _type: "sanity.imagePalette";
+  darkMuted?: SanityImagePaletteSwatch;
+  lightVibrant?: SanityImagePaletteSwatch;
+  darkVibrant?: SanityImagePaletteSwatch;
+  vibrant?: SanityImagePaletteSwatch;
+  dominant?: SanityImagePaletteSwatch;
+  lightMuted?: SanityImagePaletteSwatch;
+  muted?: SanityImagePaletteSwatch;
+};
+
+export type SanityImageDimensions = {
+  _type: "sanity.imageDimensions";
+  height?: number;
+  width?: number;
+  aspectRatio?: number;
+};
+
+export type SanityImageHotspot = {
+  _type: "sanity.imageHotspot";
+  x?: number;
+  y?: number;
+  height?: number;
+  width?: number;
+};
+
+export type SanityImageCrop = {
+  _type: "sanity.imageCrop";
+  top?: number;
+  bottom?: number;
+  left?: number;
+  right?: number;
+};
+
+export type SanityFileAsset = {
   _id: string;
-  _type: "media.tag";
+  _type: "sanity.fileAsset";
   _createdAt: string;
   _updatedAt: string;
   _rev: string;
-  name?: Slug;
+  originalFilename?: string;
+  label?: string;
+  title?: string;
+  description?: string;
+  altText?: string;
+  sha1hash?: string;
+  extension?: string;
+  mimeType?: string;
+  size?: number;
+  assetId?: string;
+  uploadId?: string;
+  path?: string;
+  url?: string;
+  source?: SanityAssetSourceData;
+};
+
+export type SanityImageAsset = {
+  _id: string;
+  _type: "sanity.imageAsset";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  originalFilename?: string;
+  label?: string;
+  title?: string;
+  description?: string;
+  altText?: string;
+  sha1hash?: string;
+  extension?: string;
+  mimeType?: string;
+  size?: number;
+  assetId?: string;
+  uploadId?: string;
+  path?: string;
+  url?: string;
+  metadata?: SanityImageMetadata;
+  source?: SanityAssetSourceData;
+};
+
+export type SanityImageMetadata = {
+  _type: "sanity.imageMetadata";
+  location?: Geopoint;
+  dimensions?: SanityImageDimensions;
+  palette?: SanityImagePalette;
+  lqip?: string;
+  blurHash?: string;
+  hasAlpha?: boolean;
+  isOpaque?: boolean;
+};
+
+export type Geopoint = {
+  _type: "geopoint";
+  lat?: number;
+  lng?: number;
+  alt?: number;
 };
 
 export type Slug = {
@@ -507,11 +496,18 @@ export type Slug = {
   source?: string;
 };
 
-export type AllSanitySchemaTypes = SanityImagePaletteSwatch | SanityImagePalette | SanityImageDimensions | SanityFileAsset | Geopoint | BlockContent | Settings | PasswordResetToken | VerificationToken | Page | BlogCategory | BlogPost | Collection | Category | Group | Tag | Item | Order | SanityImageCrop | SanityImageHotspot | SanityImageAsset | SanityAssetSourceData | SanityImageMetadata | User | Account | Code | Markdown | MediaTag | Slug;
+export type SanityAssetSourceData = {
+  _type: "sanity.assetSourceData";
+  name?: string;
+  id?: string;
+  url?: string;
+};
+
+export type AllSanitySchemaTypes = BlockContent | Settings | PasswordResetToken | VerificationToken | Page | BlogCategory | BlogPost | Collection | Category | Group | Tag | Item | Order | User | Account | Code | Markdown | SanityImagePaletteSwatch | SanityImagePalette | SanityImageDimensions | SanityImageHotspot | SanityImageCrop | SanityFileAsset | SanityImageAsset | SanityImageMetadata | Geopoint | Slug | SanityAssetSourceData;
 export declare const internalGroqTypeReferenceTo: unique symbol;
 // Source: src/sanity/lib/queries.ts
 // Variable: itemByIdQuery
-// Query: *[_type == "item" && _id == $id][0] {    _id,  _createdAt,  name,  slug,  description,  link,  affiliateLink,  sponsor,  sponsorStartDate,  sponsorEndDate,  note,  featured,  icon {    ...,    "blurDataURL": asset->metadata.lqip,    "imageColor": asset->metadata.palette.dominant.background,  },  image {    ...,    "blurDataURL": asset->metadata.lqip,    "imageColor": asset->metadata.palette.dominant.background,  },  publishDate,  paid,  order,  pricePlan,  freePlanStatus,  proPlanStatus,  sponsorPlanStatus,  rejectionReason,  submitter->,  collections[]->,  categories[]->,  tags[]->,}
+// Query: *[_type == "item" && _id == $id][0] {    _id,  _createdAt,  name,  slug,  description,  link,  affiliateLink,  "sponsor": false,  sponsorStartDate,  sponsorEndDate,  "note": null,  featured,  icon {    ...,    "blurDataURL": asset->metadata.lqip,    "imageColor": asset->metadata.palette.dominant.background,  },  image {    ...,    "blurDataURL": asset->metadata.lqip,    "imageColor": asset->metadata.palette.dominant.background,  },  publishDate,  paid,  "order": null,  pricePlan,  freePlanStatus,  proPlanStatus,  sponsorPlanStatus,  "rejectionReason": null,  submitter->{_id, name, image, link},  collections[]->,  categories[]->,  tags[]->,}
 export type ItemByIdQueryResult = {
   _id: string;
   _createdAt: string;
@@ -520,10 +516,10 @@ export type ItemByIdQueryResult = {
   description: string | null;
   link: string | null;
   affiliateLink: string | null;
-  sponsor: boolean | null;
+  sponsor: false;
   sponsorStartDate: string | null;
   sponsorEndDate: string | null;
-  note: string | null;
+  note: null;
   featured: boolean | null;
   icon: {
     asset?: {
@@ -532,6 +528,7 @@ export type ItemByIdQueryResult = {
       _weak?: boolean;
       [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
     };
+    media?: unknown;
     hotspot?: SanityImageHotspot;
     crop?: SanityImageCrop;
     alt?: string;
@@ -546,6 +543,7 @@ export type ItemByIdQueryResult = {
       _weak?: boolean;
       [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
     };
+    media?: unknown;
     hotspot?: SanityImageHotspot;
     crop?: SanityImageCrop;
     alt?: string;
@@ -555,37 +553,17 @@ export type ItemByIdQueryResult = {
   } | null;
   publishDate: string | null;
   paid: boolean | null;
-  order: {
-    _ref: string;
-    _type: "reference";
-    _weak?: boolean;
-    [internalGroqTypeReferenceTo]?: "order";
-  } | null;
+  order: null;
   pricePlan: "free" | "pro" | "sponsor" | null;
   freePlanStatus: "approved" | "pending" | "rejected" | "submitting" | null;
   proPlanStatus: "failed" | "pending" | "submitting" | "success" | null;
   sponsorPlanStatus: "failed" | "pending" | "submitting" | "success" | null;
-  rejectionReason: "Other reasons" | "The backlink to our site is not provided" | "The icon of the item is not in good quality" | "The image of the item is not in good quality" | "The information of the item is not clear" | "The item is not good fit for our directory" | null;
+  rejectionReason: null;
   submitter: {
     _id: string;
-    _type: "user";
-    _createdAt: string;
-    _updatedAt: string;
-    _rev: string;
-    name?: string;
-    email?: string;
-    emailVerified?: string;
-    image?: string;
-    link?: string;
-    password?: string;
-    role?: "ADMIN" | "USER";
-    accounts?: {
-      _ref: string;
-      _type: "reference";
-      _weak?: boolean;
-      [internalGroqTypeReferenceTo]?: "account";
-    };
-    stripeCustomerId?: string;
+    name: string | null;
+    image: string | null;
+    link: string | null;
   } | null;
   collections: Array<{
     _id: string;
@@ -603,6 +581,7 @@ export type ItemByIdQueryResult = {
         _weak?: boolean;
         [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
       };
+      media?: unknown;
       hotspot?: SanityImageHotspot;
       crop?: SanityImageCrop;
       alt?: string;
@@ -639,7 +618,7 @@ export type ItemByIdQueryResult = {
   }> | null;
 } | null;
 // Variable: itemInfoBySlugQuery
-// Query: *[_type == "item" && slug.current == $slug][0] {    _id,  _createdAt,  name,  slug,  description,  link,  affiliateLink,  sponsor,  sponsorStartDate,  sponsorEndDate,  note,  featured,  icon {    ...,    "blurDataURL": asset->metadata.lqip,    "imageColor": asset->metadata.palette.dominant.background,  },  image {    ...,    "blurDataURL": asset->metadata.lqip,    "imageColor": asset->metadata.palette.dominant.background,  },  publishDate,  paid,  order,  pricePlan,  freePlanStatus,  proPlanStatus,  sponsorPlanStatus,  rejectionReason,  submitter->,  collections[]->,  categories[]->,  tags[]->,}
+// Query: *[_type == "item" && slug.current == $slug && defined(publishDate) && publishDate <= now() && forceHidden != true][0] {    _id,  _createdAt,  name,  slug,  description,  link,  affiliateLink,  "sponsor": false,  sponsorStartDate,  sponsorEndDate,  "note": null,  featured,  icon {    ...,    "blurDataURL": asset->metadata.lqip,    "imageColor": asset->metadata.palette.dominant.background,  },  image {    ...,    "blurDataURL": asset->metadata.lqip,    "imageColor": asset->metadata.palette.dominant.background,  },  publishDate,  paid,  "order": null,  pricePlan,  freePlanStatus,  proPlanStatus,  sponsorPlanStatus,  "rejectionReason": null,  submitter->{_id, name, image, link},  collections[]->,  categories[]->,  tags[]->,}
 export type ItemInfoBySlugQueryResult = {
   _id: string;
   _createdAt: string;
@@ -648,10 +627,10 @@ export type ItemInfoBySlugQueryResult = {
   description: string | null;
   link: string | null;
   affiliateLink: string | null;
-  sponsor: boolean | null;
+  sponsor: false;
   sponsorStartDate: string | null;
   sponsorEndDate: string | null;
-  note: string | null;
+  note: null;
   featured: boolean | null;
   icon: {
     asset?: {
@@ -660,6 +639,7 @@ export type ItemInfoBySlugQueryResult = {
       _weak?: boolean;
       [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
     };
+    media?: unknown;
     hotspot?: SanityImageHotspot;
     crop?: SanityImageCrop;
     alt?: string;
@@ -674,6 +654,7 @@ export type ItemInfoBySlugQueryResult = {
       _weak?: boolean;
       [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
     };
+    media?: unknown;
     hotspot?: SanityImageHotspot;
     crop?: SanityImageCrop;
     alt?: string;
@@ -683,37 +664,17 @@ export type ItemInfoBySlugQueryResult = {
   } | null;
   publishDate: string | null;
   paid: boolean | null;
-  order: {
-    _ref: string;
-    _type: "reference";
-    _weak?: boolean;
-    [internalGroqTypeReferenceTo]?: "order";
-  } | null;
+  order: null;
   pricePlan: "free" | "pro" | "sponsor" | null;
   freePlanStatus: "approved" | "pending" | "rejected" | "submitting" | null;
   proPlanStatus: "failed" | "pending" | "submitting" | "success" | null;
   sponsorPlanStatus: "failed" | "pending" | "submitting" | "success" | null;
-  rejectionReason: "Other reasons" | "The backlink to our site is not provided" | "The icon of the item is not in good quality" | "The image of the item is not in good quality" | "The information of the item is not clear" | "The item is not good fit for our directory" | null;
+  rejectionReason: null;
   submitter: {
     _id: string;
-    _type: "user";
-    _createdAt: string;
-    _updatedAt: string;
-    _rev: string;
-    name?: string;
-    email?: string;
-    emailVerified?: string;
-    image?: string;
-    link?: string;
-    password?: string;
-    role?: "ADMIN" | "USER";
-    accounts?: {
-      _ref: string;
-      _type: "reference";
-      _weak?: boolean;
-      [internalGroqTypeReferenceTo]?: "account";
-    };
-    stripeCustomerId?: string;
+    name: string | null;
+    image: string | null;
+    link: string | null;
   } | null;
   collections: Array<{
     _id: string;
@@ -731,6 +692,7 @@ export type ItemInfoBySlugQueryResult = {
         _weak?: boolean;
         [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
       };
+      media?: unknown;
       hotspot?: SanityImageHotspot;
       crop?: SanityImageCrop;
       alt?: string;
@@ -767,7 +729,7 @@ export type ItemInfoBySlugQueryResult = {
   }> | null;
 } | null;
 // Variable: itemFullInfoByIdQuery
-// Query: *[_type == "item" && _id == $id][0] {      _id,  _createdAt,  name,  slug,  description,  link,  affiliateLink,  sponsor,  sponsorStartDate,  sponsorEndDate,  note,  featured,  icon {    ...,    "blurDataURL": asset->metadata.lqip,    "imageColor": asset->metadata.palette.dominant.background,  },  image {    ...,    "blurDataURL": asset->metadata.lqip,    "imageColor": asset->metadata.palette.dominant.background,  },  publishDate,  paid,  order,  pricePlan,  freePlanStatus,  proPlanStatus,  sponsorPlanStatus,  rejectionReason,  submitter->,  collections[]->,  categories[]->,  tags[]->,  introduction,}
+// Query: *[_type == "item" && _id == $id][0] {      _id,  _createdAt,  name,  slug,  description,  link,  affiliateLink,  "sponsor": false,  sponsorStartDate,  sponsorEndDate,  "note": null,  featured,  icon {    ...,    "blurDataURL": asset->metadata.lqip,    "imageColor": asset->metadata.palette.dominant.background,  },  image {    ...,    "blurDataURL": asset->metadata.lqip,    "imageColor": asset->metadata.palette.dominant.background,  },  publishDate,  paid,  "order": null,  pricePlan,  freePlanStatus,  proPlanStatus,  sponsorPlanStatus,  "rejectionReason": null,  submitter->{_id, name, image, link},  collections[]->,  categories[]->,  tags[]->,  introduction,}
 export type ItemFullInfoByIdQueryResult = {
   _id: string;
   _createdAt: string;
@@ -776,10 +738,10 @@ export type ItemFullInfoByIdQueryResult = {
   description: string | null;
   link: string | null;
   affiliateLink: string | null;
-  sponsor: boolean | null;
+  sponsor: false;
   sponsorStartDate: string | null;
   sponsorEndDate: string | null;
-  note: string | null;
+  note: null;
   featured: boolean | null;
   icon: {
     asset?: {
@@ -788,6 +750,7 @@ export type ItemFullInfoByIdQueryResult = {
       _weak?: boolean;
       [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
     };
+    media?: unknown;
     hotspot?: SanityImageHotspot;
     crop?: SanityImageCrop;
     alt?: string;
@@ -802,6 +765,7 @@ export type ItemFullInfoByIdQueryResult = {
       _weak?: boolean;
       [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
     };
+    media?: unknown;
     hotspot?: SanityImageHotspot;
     crop?: SanityImageCrop;
     alt?: string;
@@ -811,37 +775,17 @@ export type ItemFullInfoByIdQueryResult = {
   } | null;
   publishDate: string | null;
   paid: boolean | null;
-  order: {
-    _ref: string;
-    _type: "reference";
-    _weak?: boolean;
-    [internalGroqTypeReferenceTo]?: "order";
-  } | null;
+  order: null;
   pricePlan: "free" | "pro" | "sponsor" | null;
   freePlanStatus: "approved" | "pending" | "rejected" | "submitting" | null;
   proPlanStatus: "failed" | "pending" | "submitting" | "success" | null;
   sponsorPlanStatus: "failed" | "pending" | "submitting" | "success" | null;
-  rejectionReason: "Other reasons" | "The backlink to our site is not provided" | "The icon of the item is not in good quality" | "The image of the item is not in good quality" | "The information of the item is not clear" | "The item is not good fit for our directory" | null;
+  rejectionReason: null;
   submitter: {
     _id: string;
-    _type: "user";
-    _createdAt: string;
-    _updatedAt: string;
-    _rev: string;
-    name?: string;
-    email?: string;
-    emailVerified?: string;
-    image?: string;
-    link?: string;
-    password?: string;
-    role?: "ADMIN" | "USER";
-    accounts?: {
-      _ref: string;
-      _type: "reference";
-      _weak?: boolean;
-      [internalGroqTypeReferenceTo]?: "account";
-    };
-    stripeCustomerId?: string;
+    name: string | null;
+    image: string | null;
+    link: string | null;
   } | null;
   collections: Array<{
     _id: string;
@@ -859,6 +803,7 @@ export type ItemFullInfoByIdQueryResult = {
         _weak?: boolean;
         [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
       };
+      media?: unknown;
       hotspot?: SanityImageHotspot;
       crop?: SanityImageCrop;
       alt?: string;
@@ -896,7 +841,7 @@ export type ItemFullInfoByIdQueryResult = {
   introduction: string | null;
 } | null;
 // Variable: itemFullInfoBySlugQuery
-// Query: *[_type == "item" && slug.current == $slug && forceHidden != true] [0] {    introduction,  "related": *[_type == "item" && defined(slug.current)     && defined(publishDate)     && forceHidden != true    && sponsor != true    && count(categories[@._ref in ^.^.categories[]._ref]) > 0 && _id != ^._id]     | order(publishedDate desc, _createdAt desc) [0...3] {        _id,  _createdAt,  name,  slug,  description,  link,  affiliateLink,  sponsor,  sponsorStartDate,  sponsorEndDate,  note,  featured,  icon {    ...,    "blurDataURL": asset->metadata.lqip,    "imageColor": asset->metadata.palette.dominant.background,  },  image {    ...,    "blurDataURL": asset->metadata.lqip,    "imageColor": asset->metadata.palette.dominant.background,  },  publishDate,  paid,  order,  pricePlan,  freePlanStatus,  proPlanStatus,  sponsorPlanStatus,  rejectionReason,  submitter->,  collections[]->,  categories[]->,  tags[]->,  },    _id,  _createdAt,  name,  slug,  description,  link,  affiliateLink,  sponsor,  sponsorStartDate,  sponsorEndDate,  note,  featured,  icon {    ...,    "blurDataURL": asset->metadata.lqip,    "imageColor": asset->metadata.palette.dominant.background,  },  image {    ...,    "blurDataURL": asset->metadata.lqip,    "imageColor": asset->metadata.palette.dominant.background,  },  publishDate,  paid,  order,  pricePlan,  freePlanStatus,  proPlanStatus,  sponsorPlanStatus,  rejectionReason,  submitter->,  collections[]->,  categories[]->,  tags[]->,}
+// Query: *[_type == "item" && slug.current == $slug&& defined(publishDate) && publishDate <= now() && forceHidden != true] [0] {    introduction,  "related": *[_type == "item" && defined(slug.current)     && defined(publishDate) && publishDate <= now()    && forceHidden != true    && sponsor != true    && count(categories[@._ref in ^.^.categories[]._ref]) > 0 && _id != ^._id]     | order(publishDate desc, _id asc) [0...3] {        _id,  _createdAt,  name,  slug,  description,  link,  affiliateLink,  "sponsor": false,  sponsorStartDate,  sponsorEndDate,  "note": null,  featured,  icon {    ...,    "blurDataURL": asset->metadata.lqip,    "imageColor": asset->metadata.palette.dominant.background,  },  image {    ...,    "blurDataURL": asset->metadata.lqip,    "imageColor": asset->metadata.palette.dominant.background,  },  publishDate,  paid,  "order": null,  pricePlan,  freePlanStatus,  proPlanStatus,  sponsorPlanStatus,  "rejectionReason": null,  submitter->{_id, name, image, link},  collections[]->,  categories[]->,  tags[]->,  },    _id,  _createdAt,  name,  slug,  description,  link,  affiliateLink,  "sponsor": false,  sponsorStartDate,  sponsorEndDate,  "note": null,  featured,  icon {    ...,    "blurDataURL": asset->metadata.lqip,    "imageColor": asset->metadata.palette.dominant.background,  },  image {    ...,    "blurDataURL": asset->metadata.lqip,    "imageColor": asset->metadata.palette.dominant.background,  },  publishDate,  paid,  "order": null,  pricePlan,  freePlanStatus,  proPlanStatus,  sponsorPlanStatus,  "rejectionReason": null,  submitter->{_id, name, image, link},  collections[]->,  categories[]->,  tags[]->,}
 export type ItemFullInfoBySlugQueryResult = {
   introduction: string | null;
   related: Array<{
@@ -907,10 +852,10 @@ export type ItemFullInfoBySlugQueryResult = {
     description: string | null;
     link: string | null;
     affiliateLink: string | null;
-    sponsor: boolean | null;
+    sponsor: false;
     sponsorStartDate: string | null;
     sponsorEndDate: string | null;
-    note: string | null;
+    note: null;
     featured: boolean | null;
     icon: {
       asset?: {
@@ -919,6 +864,7 @@ export type ItemFullInfoBySlugQueryResult = {
         _weak?: boolean;
         [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
       };
+      media?: unknown;
       hotspot?: SanityImageHotspot;
       crop?: SanityImageCrop;
       alt?: string;
@@ -933,6 +879,7 @@ export type ItemFullInfoBySlugQueryResult = {
         _weak?: boolean;
         [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
       };
+      media?: unknown;
       hotspot?: SanityImageHotspot;
       crop?: SanityImageCrop;
       alt?: string;
@@ -942,37 +889,17 @@ export type ItemFullInfoBySlugQueryResult = {
     } | null;
     publishDate: string | null;
     paid: boolean | null;
-    order: {
-      _ref: string;
-      _type: "reference";
-      _weak?: boolean;
-      [internalGroqTypeReferenceTo]?: "order";
-    } | null;
+    order: null;
     pricePlan: "free" | "pro" | "sponsor" | null;
     freePlanStatus: "approved" | "pending" | "rejected" | "submitting" | null;
     proPlanStatus: "failed" | "pending" | "submitting" | "success" | null;
     sponsorPlanStatus: "failed" | "pending" | "submitting" | "success" | null;
-    rejectionReason: "Other reasons" | "The backlink to our site is not provided" | "The icon of the item is not in good quality" | "The image of the item is not in good quality" | "The information of the item is not clear" | "The item is not good fit for our directory" | null;
+    rejectionReason: null;
     submitter: {
       _id: string;
-      _type: "user";
-      _createdAt: string;
-      _updatedAt: string;
-      _rev: string;
-      name?: string;
-      email?: string;
-      emailVerified?: string;
-      image?: string;
-      link?: string;
-      password?: string;
-      role?: "ADMIN" | "USER";
-      accounts?: {
-        _ref: string;
-        _type: "reference";
-        _weak?: boolean;
-        [internalGroqTypeReferenceTo]?: "account";
-      };
-      stripeCustomerId?: string;
+      name: string | null;
+      image: string | null;
+      link: string | null;
     } | null;
     collections: Array<{
       _id: string;
@@ -990,6 +917,7 @@ export type ItemFullInfoBySlugQueryResult = {
           _weak?: boolean;
           [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
         };
+        media?: unknown;
         hotspot?: SanityImageHotspot;
         crop?: SanityImageCrop;
         alt?: string;
@@ -1032,10 +960,10 @@ export type ItemFullInfoBySlugQueryResult = {
   description: string | null;
   link: string | null;
   affiliateLink: string | null;
-  sponsor: boolean | null;
+  sponsor: false;
   sponsorStartDate: string | null;
   sponsorEndDate: string | null;
-  note: string | null;
+  note: null;
   featured: boolean | null;
   icon: {
     asset?: {
@@ -1044,6 +972,7 @@ export type ItemFullInfoBySlugQueryResult = {
       _weak?: boolean;
       [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
     };
+    media?: unknown;
     hotspot?: SanityImageHotspot;
     crop?: SanityImageCrop;
     alt?: string;
@@ -1058,6 +987,7 @@ export type ItemFullInfoBySlugQueryResult = {
       _weak?: boolean;
       [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
     };
+    media?: unknown;
     hotspot?: SanityImageHotspot;
     crop?: SanityImageCrop;
     alt?: string;
@@ -1067,37 +997,17 @@ export type ItemFullInfoBySlugQueryResult = {
   } | null;
   publishDate: string | null;
   paid: boolean | null;
-  order: {
-    _ref: string;
-    _type: "reference";
-    _weak?: boolean;
-    [internalGroqTypeReferenceTo]?: "order";
-  } | null;
+  order: null;
   pricePlan: "free" | "pro" | "sponsor" | null;
   freePlanStatus: "approved" | "pending" | "rejected" | "submitting" | null;
   proPlanStatus: "failed" | "pending" | "submitting" | "success" | null;
   sponsorPlanStatus: "failed" | "pending" | "submitting" | "success" | null;
-  rejectionReason: "Other reasons" | "The backlink to our site is not provided" | "The icon of the item is not in good quality" | "The image of the item is not in good quality" | "The information of the item is not clear" | "The item is not good fit for our directory" | null;
+  rejectionReason: null;
   submitter: {
     _id: string;
-    _type: "user";
-    _createdAt: string;
-    _updatedAt: string;
-    _rev: string;
-    name?: string;
-    email?: string;
-    emailVerified?: string;
-    image?: string;
-    link?: string;
-    password?: string;
-    role?: "ADMIN" | "USER";
-    accounts?: {
-      _ref: string;
-      _type: "reference";
-      _weak?: boolean;
-      [internalGroqTypeReferenceTo]?: "account";
-    };
-    stripeCustomerId?: string;
+    name: string | null;
+    image: string | null;
+    link: string | null;
   } | null;
   collections: Array<{
     _id: string;
@@ -1115,6 +1025,7 @@ export type ItemFullInfoBySlugQueryResult = {
         _weak?: boolean;
         [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
       };
+      media?: unknown;
       hotspot?: SanityImageHotspot;
       crop?: SanityImageCrop;
       alt?: string;
@@ -1151,7 +1062,7 @@ export type ItemFullInfoBySlugQueryResult = {
   }> | null;
 } | null;
 // Variable: itemListQuery
-// Query: *[_type == "item" && defined(slug.current)   && defined(publishDate)  && forceHidden != true  && sponsor != true]  | order(coalesce(featured, false) desc, publishDate desc) {      _id,  _createdAt,  name,  slug,  description,  link,  affiliateLink,  sponsor,  sponsorStartDate,  sponsorEndDate,  note,  featured,  icon {    ...,    "blurDataURL": asset->metadata.lqip,    "imageColor": asset->metadata.palette.dominant.background,  },  image {    ...,    "blurDataURL": asset->metadata.lqip,    "imageColor": asset->metadata.palette.dominant.background,  },  publishDate,  paid,  order,  pricePlan,  freePlanStatus,  proPlanStatus,  sponsorPlanStatus,  rejectionReason,  submitter->,  collections[]->,  categories[]->,  tags[]->,}
+// Query: *[_type == "item" && defined(slug.current)   && defined(publishDate)  && forceHidden != true  && sponsor != true]  | order(coalesce(featured, false) desc, publishDate desc) {      _id,  _createdAt,  name,  slug,  description,  link,  affiliateLink,  "sponsor": false,  sponsorStartDate,  sponsorEndDate,  "note": null,  featured,  icon {    ...,    "blurDataURL": asset->metadata.lqip,    "imageColor": asset->metadata.palette.dominant.background,  },  image {    ...,    "blurDataURL": asset->metadata.lqip,    "imageColor": asset->metadata.palette.dominant.background,  },  publishDate,  paid,  "order": null,  pricePlan,  freePlanStatus,  proPlanStatus,  sponsorPlanStatus,  "rejectionReason": null,  submitter->{_id, name, image, link},  collections[]->,  categories[]->,  tags[]->,}
 export type ItemListQueryResult = Array<{
   _id: string;
   _createdAt: string;
@@ -1160,10 +1071,10 @@ export type ItemListQueryResult = Array<{
   description: string | null;
   link: string | null;
   affiliateLink: string | null;
-  sponsor: boolean | null;
+  sponsor: false;
   sponsorStartDate: string | null;
   sponsorEndDate: string | null;
-  note: string | null;
+  note: null;
   featured: boolean | null;
   icon: {
     asset?: {
@@ -1172,6 +1083,7 @@ export type ItemListQueryResult = Array<{
       _weak?: boolean;
       [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
     };
+    media?: unknown;
     hotspot?: SanityImageHotspot;
     crop?: SanityImageCrop;
     alt?: string;
@@ -1186,6 +1098,7 @@ export type ItemListQueryResult = Array<{
       _weak?: boolean;
       [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
     };
+    media?: unknown;
     hotspot?: SanityImageHotspot;
     crop?: SanityImageCrop;
     alt?: string;
@@ -1195,37 +1108,17 @@ export type ItemListQueryResult = Array<{
   } | null;
   publishDate: string | null;
   paid: boolean | null;
-  order: {
-    _ref: string;
-    _type: "reference";
-    _weak?: boolean;
-    [internalGroqTypeReferenceTo]?: "order";
-  } | null;
+  order: null;
   pricePlan: "free" | "pro" | "sponsor" | null;
   freePlanStatus: "approved" | "pending" | "rejected" | "submitting" | null;
   proPlanStatus: "failed" | "pending" | "submitting" | "success" | null;
   sponsorPlanStatus: "failed" | "pending" | "submitting" | "success" | null;
-  rejectionReason: "Other reasons" | "The backlink to our site is not provided" | "The icon of the item is not in good quality" | "The image of the item is not in good quality" | "The information of the item is not clear" | "The item is not good fit for our directory" | null;
+  rejectionReason: null;
   submitter: {
     _id: string;
-    _type: "user";
-    _createdAt: string;
-    _updatedAt: string;
-    _rev: string;
-    name?: string;
-    email?: string;
-    emailVerified?: string;
-    image?: string;
-    link?: string;
-    password?: string;
-    role?: "ADMIN" | "USER";
-    accounts?: {
-      _ref: string;
-      _type: "reference";
-      _weak?: boolean;
-      [internalGroqTypeReferenceTo]?: "account";
-    };
-    stripeCustomerId?: string;
+    name: string | null;
+    image: string | null;
+    link: string | null;
   } | null;
   collections: Array<{
     _id: string;
@@ -1243,6 +1136,7 @@ export type ItemListQueryResult = Array<{
         _weak?: boolean;
         [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
       };
+      media?: unknown;
       hotspot?: SanityImageHotspot;
       crop?: SanityImageCrop;
       alt?: string;
@@ -1279,135 +1173,10 @@ export type ItemListQueryResult = Array<{
   }> | null;
 }>;
 // Variable: sponsorItemListQuery
-// Query: *[_type == "item" && defined(slug.current)   && defined(publishDate)  && forceHidden != true  && sponsor == true  && sponsorStartDate <= now()  && sponsorEndDate >= now()]   | order(coalesce(featured, false) desc, publishDate desc) {      _id,  _createdAt,  name,  slug,  description,  link,  affiliateLink,  sponsor,  sponsorStartDate,  sponsorEndDate,  note,  featured,  icon {    ...,    "blurDataURL": asset->metadata.lqip,    "imageColor": asset->metadata.palette.dominant.background,  },  image {    ...,    "blurDataURL": asset->metadata.lqip,    "imageColor": asset->metadata.palette.dominant.background,  },  publishDate,  paid,  order,  pricePlan,  freePlanStatus,  proPlanStatus,  sponsorPlanStatus,  rejectionReason,  submitter->,  collections[]->,  categories[]->,  tags[]->,}
-export type SponsorItemListQueryResult = Array<{
-  _id: string;
-  _createdAt: string;
-  name: string | null;
-  slug: Slug | null;
-  description: string | null;
-  link: string | null;
-  affiliateLink: string | null;
-  sponsor: boolean | null;
-  sponsorStartDate: string | null;
-  sponsorEndDate: string | null;
-  note: string | null;
-  featured: boolean | null;
-  icon: {
-    asset?: {
-      _ref: string;
-      _type: "reference";
-      _weak?: boolean;
-      [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
-    };
-    hotspot?: SanityImageHotspot;
-    crop?: SanityImageCrop;
-    alt?: string;
-    _type: "image";
-    blurDataURL: string | null;
-    imageColor: string | null;
-  } | null;
-  image: {
-    asset?: {
-      _ref: string;
-      _type: "reference";
-      _weak?: boolean;
-      [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
-    };
-    hotspot?: SanityImageHotspot;
-    crop?: SanityImageCrop;
-    alt?: string;
-    _type: "image";
-    blurDataURL: string | null;
-    imageColor: string | null;
-  } | null;
-  publishDate: string | null;
-  paid: boolean | null;
-  order: {
-    _ref: string;
-    _type: "reference";
-    _weak?: boolean;
-    [internalGroqTypeReferenceTo]?: "order";
-  } | null;
-  pricePlan: "free" | "pro" | "sponsor" | null;
-  freePlanStatus: "approved" | "pending" | "rejected" | "submitting" | null;
-  proPlanStatus: "failed" | "pending" | "submitting" | "success" | null;
-  sponsorPlanStatus: "failed" | "pending" | "submitting" | "success" | null;
-  rejectionReason: "Other reasons" | "The backlink to our site is not provided" | "The icon of the item is not in good quality" | "The image of the item is not in good quality" | "The information of the item is not clear" | "The item is not good fit for our directory" | null;
-  submitter: {
-    _id: string;
-    _type: "user";
-    _createdAt: string;
-    _updatedAt: string;
-    _rev: string;
-    name?: string;
-    email?: string;
-    emailVerified?: string;
-    image?: string;
-    link?: string;
-    password?: string;
-    role?: "ADMIN" | "USER";
-    accounts?: {
-      _ref: string;
-      _type: "reference";
-      _weak?: boolean;
-      [internalGroqTypeReferenceTo]?: "account";
-    };
-    stripeCustomerId?: string;
-  } | null;
-  collections: Array<{
-    _id: string;
-    _type: "collection";
-    _createdAt: string;
-    _updatedAt: string;
-    _rev: string;
-    name?: string;
-    slug?: Slug;
-    description?: string;
-    icon?: {
-      asset?: {
-        _ref: string;
-        _type: "reference";
-        _weak?: boolean;
-        [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
-      };
-      hotspot?: SanityImageHotspot;
-      crop?: SanityImageCrop;
-      alt?: string;
-      _type: "image";
-    };
-    priority?: number;
-  }> | null;
-  categories: Array<{
-    _id: string;
-    _type: "category";
-    _createdAt: string;
-    _updatedAt: string;
-    _rev: string;
-    name?: string;
-    slug?: Slug;
-    description?: string;
-    group?: {
-      _ref: string;
-      _type: "reference";
-      _weak?: boolean;
-      [internalGroqTypeReferenceTo]?: "group";
-    };
-    priority?: number;
-  }> | null;
-  tags: Array<{
-    _id: string;
-    _type: "tag";
-    _createdAt: string;
-    _updatedAt: string;
-    _rev: string;
-    name?: string;
-    slug?: Slug;
-    description?: string;
-  }> | null;
-}>;
+// Query: *[_type == "item" && false && defined(slug.current)   && defined(publishDate)  && forceHidden != true  && sponsor == true  && sponsorStartDate <= now()  && sponsorEndDate >= now()]   | order(coalesce(featured, false) desc, publishDate desc) {      _id,  _createdAt,  name,  slug,  description,  link,  affiliateLink,  "sponsor": false,  sponsorStartDate,  sponsorEndDate,  "note": null,  featured,  icon {    ...,    "blurDataURL": asset->metadata.lqip,    "imageColor": asset->metadata.palette.dominant.background,  },  image {    ...,    "blurDataURL": asset->metadata.lqip,    "imageColor": asset->metadata.palette.dominant.background,  },  publishDate,  paid,  "order": null,  pricePlan,  freePlanStatus,  proPlanStatus,  sponsorPlanStatus,  "rejectionReason": null,  submitter->{_id, name, image, link},  collections[]->,  categories[]->,  tags[]->,}
+export type SponsorItemListQueryResult = Array<never>;
 // Variable: itemListOfFeaturedQuery
-// Query: *[_type == "item" && defined(slug.current)   && defined(publishDate)   && forceHidden != true   && sponsor != true  && featured == true]   | order(coalesce(featured, false) desc, publishDate desc) [0...$count] {      _id,  _createdAt,  name,  slug,  description,  link,  affiliateLink,  sponsor,  sponsorStartDate,  sponsorEndDate,  note,  featured,  icon {    ...,    "blurDataURL": asset->metadata.lqip,    "imageColor": asset->metadata.palette.dominant.background,  },  image {    ...,    "blurDataURL": asset->metadata.lqip,    "imageColor": asset->metadata.palette.dominant.background,  },  publishDate,  paid,  order,  pricePlan,  freePlanStatus,  proPlanStatus,  sponsorPlanStatus,  rejectionReason,  submitter->,  collections[]->,  categories[]->,  tags[]->,}
+// Query: *[_type == "item" && defined(slug.current)   && defined(publishDate)   && forceHidden != true   && sponsor != true  && featured == true]   | order(coalesce(featured, false) desc, publishDate desc) [0...$count] {      _id,  _createdAt,  name,  slug,  description,  link,  affiliateLink,  "sponsor": false,  sponsorStartDate,  sponsorEndDate,  "note": null,  featured,  icon {    ...,    "blurDataURL": asset->metadata.lqip,    "imageColor": asset->metadata.palette.dominant.background,  },  image {    ...,    "blurDataURL": asset->metadata.lqip,    "imageColor": asset->metadata.palette.dominant.background,  },  publishDate,  paid,  "order": null,  pricePlan,  freePlanStatus,  proPlanStatus,  sponsorPlanStatus,  "rejectionReason": null,  submitter->{_id, name, image, link},  collections[]->,  categories[]->,  tags[]->,}
 export type ItemListOfFeaturedQueryResult = Array<{
   _id: string;
   _createdAt: string;
@@ -1416,10 +1185,10 @@ export type ItemListOfFeaturedQueryResult = Array<{
   description: string | null;
   link: string | null;
   affiliateLink: string | null;
-  sponsor: boolean | null;
+  sponsor: false;
   sponsorStartDate: string | null;
   sponsorEndDate: string | null;
-  note: string | null;
+  note: null;
   featured: boolean | null;
   icon: {
     asset?: {
@@ -1428,6 +1197,7 @@ export type ItemListOfFeaturedQueryResult = Array<{
       _weak?: boolean;
       [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
     };
+    media?: unknown;
     hotspot?: SanityImageHotspot;
     crop?: SanityImageCrop;
     alt?: string;
@@ -1442,6 +1212,7 @@ export type ItemListOfFeaturedQueryResult = Array<{
       _weak?: boolean;
       [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
     };
+    media?: unknown;
     hotspot?: SanityImageHotspot;
     crop?: SanityImageCrop;
     alt?: string;
@@ -1451,37 +1222,17 @@ export type ItemListOfFeaturedQueryResult = Array<{
   } | null;
   publishDate: string | null;
   paid: boolean | null;
-  order: {
-    _ref: string;
-    _type: "reference";
-    _weak?: boolean;
-    [internalGroqTypeReferenceTo]?: "order";
-  } | null;
+  order: null;
   pricePlan: "free" | "pro" | "sponsor" | null;
   freePlanStatus: "approved" | "pending" | "rejected" | "submitting" | null;
   proPlanStatus: "failed" | "pending" | "submitting" | "success" | null;
   sponsorPlanStatus: "failed" | "pending" | "submitting" | "success" | null;
-  rejectionReason: "Other reasons" | "The backlink to our site is not provided" | "The icon of the item is not in good quality" | "The image of the item is not in good quality" | "The information of the item is not clear" | "The item is not good fit for our directory" | null;
+  rejectionReason: null;
   submitter: {
     _id: string;
-    _type: "user";
-    _createdAt: string;
-    _updatedAt: string;
-    _rev: string;
-    name?: string;
-    email?: string;
-    emailVerified?: string;
-    image?: string;
-    link?: string;
-    password?: string;
-    role?: "ADMIN" | "USER";
-    accounts?: {
-      _ref: string;
-      _type: "reference";
-      _weak?: boolean;
-      [internalGroqTypeReferenceTo]?: "account";
-    };
-    stripeCustomerId?: string;
+    name: string | null;
+    image: string | null;
+    link: string | null;
   } | null;
   collections: Array<{
     _id: string;
@@ -1499,6 +1250,7 @@ export type ItemListOfFeaturedQueryResult = Array<{
         _weak?: boolean;
         [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
       };
+      media?: unknown;
       hotspot?: SanityImageHotspot;
       crop?: SanityImageCrop;
       alt?: string;
@@ -1535,7 +1287,7 @@ export type ItemListOfFeaturedQueryResult = Array<{
   }> | null;
 }>;
 // Variable: itemListOfLatestQuery
-// Query: *[_type == "item" && defined(slug.current)   && defined(publishDate)   && forceHidden != true  && sponsor != true]   | order(coalesce(featured, false) desc, publishDate desc) [0...$count] {      _id,  _createdAt,  name,  slug,  description,  link,  affiliateLink,  sponsor,  sponsorStartDate,  sponsorEndDate,  note,  featured,  icon {    ...,    "blurDataURL": asset->metadata.lqip,    "imageColor": asset->metadata.palette.dominant.background,  },  image {    ...,    "blurDataURL": asset->metadata.lqip,    "imageColor": asset->metadata.palette.dominant.background,  },  publishDate,  paid,  order,  pricePlan,  freePlanStatus,  proPlanStatus,  sponsorPlanStatus,  rejectionReason,  submitter->,  collections[]->,  categories[]->,  tags[]->,}
+// Query: *[_type == "item" && defined(slug.current)   && defined(publishDate)   && forceHidden != true  && sponsor != true]   | order(coalesce(featured, false) desc, publishDate desc) [0...$count] {      _id,  _createdAt,  name,  slug,  description,  link,  affiliateLink,  "sponsor": false,  sponsorStartDate,  sponsorEndDate,  "note": null,  featured,  icon {    ...,    "blurDataURL": asset->metadata.lqip,    "imageColor": asset->metadata.palette.dominant.background,  },  image {    ...,    "blurDataURL": asset->metadata.lqip,    "imageColor": asset->metadata.palette.dominant.background,  },  publishDate,  paid,  "order": null,  pricePlan,  freePlanStatus,  proPlanStatus,  sponsorPlanStatus,  "rejectionReason": null,  submitter->{_id, name, image, link},  collections[]->,  categories[]->,  tags[]->,}
 export type ItemListOfLatestQueryResult = Array<{
   _id: string;
   _createdAt: string;
@@ -1544,10 +1296,10 @@ export type ItemListOfLatestQueryResult = Array<{
   description: string | null;
   link: string | null;
   affiliateLink: string | null;
-  sponsor: boolean | null;
+  sponsor: false;
   sponsorStartDate: string | null;
   sponsorEndDate: string | null;
-  note: string | null;
+  note: null;
   featured: boolean | null;
   icon: {
     asset?: {
@@ -1556,6 +1308,7 @@ export type ItemListOfLatestQueryResult = Array<{
       _weak?: boolean;
       [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
     };
+    media?: unknown;
     hotspot?: SanityImageHotspot;
     crop?: SanityImageCrop;
     alt?: string;
@@ -1570,6 +1323,7 @@ export type ItemListOfLatestQueryResult = Array<{
       _weak?: boolean;
       [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
     };
+    media?: unknown;
     hotspot?: SanityImageHotspot;
     crop?: SanityImageCrop;
     alt?: string;
@@ -1579,37 +1333,17 @@ export type ItemListOfLatestQueryResult = Array<{
   } | null;
   publishDate: string | null;
   paid: boolean | null;
-  order: {
-    _ref: string;
-    _type: "reference";
-    _weak?: boolean;
-    [internalGroqTypeReferenceTo]?: "order";
-  } | null;
+  order: null;
   pricePlan: "free" | "pro" | "sponsor" | null;
   freePlanStatus: "approved" | "pending" | "rejected" | "submitting" | null;
   proPlanStatus: "failed" | "pending" | "submitting" | "success" | null;
   sponsorPlanStatus: "failed" | "pending" | "submitting" | "success" | null;
-  rejectionReason: "Other reasons" | "The backlink to our site is not provided" | "The icon of the item is not in good quality" | "The image of the item is not in good quality" | "The information of the item is not clear" | "The item is not good fit for our directory" | null;
+  rejectionReason: null;
   submitter: {
     _id: string;
-    _type: "user";
-    _createdAt: string;
-    _updatedAt: string;
-    _rev: string;
-    name?: string;
-    email?: string;
-    emailVerified?: string;
-    image?: string;
-    link?: string;
-    password?: string;
-    role?: "ADMIN" | "USER";
-    accounts?: {
-      _ref: string;
-      _type: "reference";
-      _weak?: boolean;
-      [internalGroqTypeReferenceTo]?: "account";
-    };
-    stripeCustomerId?: string;
+    name: string | null;
+    image: string | null;
+    link: string | null;
   } | null;
   collections: Array<{
     _id: string;
@@ -1627,6 +1361,7 @@ export type ItemListOfLatestQueryResult = Array<{
         _weak?: boolean;
         [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
       };
+      media?: unknown;
       hotspot?: SanityImageHotspot;
       crop?: SanityImageCrop;
       alt?: string;
@@ -1680,6 +1415,7 @@ export type CollectionListQueryResult = Array<{
       _weak?: boolean;
       [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
     };
+    media?: unknown;
     hotspot?: SanityImageHotspot;
     crop?: SanityImageCrop;
     alt?: string;
@@ -1707,6 +1443,7 @@ export type CollectionQueryResult = {
       _weak?: boolean;
       [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
     };
+    media?: unknown;
     hotspot?: SanityImageHotspot;
     crop?: SanityImageCrop;
     alt?: string;
@@ -1809,7 +1546,7 @@ export type TagQueryResult = {
   description?: string;
 } | null;
 // Variable: submissionListQuery
-// Query: *[_type == "item" && defined(slug.current)  && submitter._ref == $userId]   | order(_createdAt desc) {      _id,  _createdAt,  name,  slug,  description,  link,  affiliateLink,  sponsor,  sponsorStartDate,  sponsorEndDate,  note,  featured,  icon {    ...,    "blurDataURL": asset->metadata.lqip,    "imageColor": asset->metadata.palette.dominant.background,  },  image {    ...,    "blurDataURL": asset->metadata.lqip,    "imageColor": asset->metadata.palette.dominant.background,  },  publishDate,  paid,  order,  pricePlan,  freePlanStatus,  proPlanStatus,  sponsorPlanStatus,  rejectionReason,  submitter->,  collections[]->,  categories[]->,  tags[]->,}
+// Query: *[_type == "item" && defined(slug.current)  && submitter._ref == $userId]   | order(_createdAt desc) {      _id,  _createdAt,  name,  slug,  description,  link,  affiliateLink,  "sponsor": false,  sponsorStartDate,  sponsorEndDate,  "note": null,  featured,  icon {    ...,    "blurDataURL": asset->metadata.lqip,    "imageColor": asset->metadata.palette.dominant.background,  },  image {    ...,    "blurDataURL": asset->metadata.lqip,    "imageColor": asset->metadata.palette.dominant.background,  },  publishDate,  paid,  "order": null,  pricePlan,  freePlanStatus,  proPlanStatus,  sponsorPlanStatus,  "rejectionReason": null,  submitter->{_id, name, image, link},  collections[]->,  categories[]->,  tags[]->,}
 export type SubmissionListQueryResult = Array<{
   _id: string;
   _createdAt: string;
@@ -1818,10 +1555,10 @@ export type SubmissionListQueryResult = Array<{
   description: string | null;
   link: string | null;
   affiliateLink: string | null;
-  sponsor: boolean | null;
+  sponsor: false;
   sponsorStartDate: string | null;
   sponsorEndDate: string | null;
-  note: string | null;
+  note: null;
   featured: boolean | null;
   icon: {
     asset?: {
@@ -1830,6 +1567,7 @@ export type SubmissionListQueryResult = Array<{
       _weak?: boolean;
       [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
     };
+    media?: unknown;
     hotspot?: SanityImageHotspot;
     crop?: SanityImageCrop;
     alt?: string;
@@ -1844,6 +1582,7 @@ export type SubmissionListQueryResult = Array<{
       _weak?: boolean;
       [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
     };
+    media?: unknown;
     hotspot?: SanityImageHotspot;
     crop?: SanityImageCrop;
     alt?: string;
@@ -1853,37 +1592,17 @@ export type SubmissionListQueryResult = Array<{
   } | null;
   publishDate: string | null;
   paid: boolean | null;
-  order: {
-    _ref: string;
-    _type: "reference";
-    _weak?: boolean;
-    [internalGroqTypeReferenceTo]?: "order";
-  } | null;
+  order: null;
   pricePlan: "free" | "pro" | "sponsor" | null;
   freePlanStatus: "approved" | "pending" | "rejected" | "submitting" | null;
   proPlanStatus: "failed" | "pending" | "submitting" | "success" | null;
   sponsorPlanStatus: "failed" | "pending" | "submitting" | "success" | null;
-  rejectionReason: "Other reasons" | "The backlink to our site is not provided" | "The icon of the item is not in good quality" | "The image of the item is not in good quality" | "The information of the item is not clear" | "The item is not good fit for our directory" | null;
+  rejectionReason: null;
   submitter: {
     _id: string;
-    _type: "user";
-    _createdAt: string;
-    _updatedAt: string;
-    _rev: string;
-    name?: string;
-    email?: string;
-    emailVerified?: string;
-    image?: string;
-    link?: string;
-    password?: string;
-    role?: "ADMIN" | "USER";
-    accounts?: {
-      _ref: string;
-      _type: "reference";
-      _weak?: boolean;
-      [internalGroqTypeReferenceTo]?: "account";
-    };
-    stripeCustomerId?: string;
+    name: string | null;
+    image: string | null;
+    link: string | null;
   } | null;
   collections: Array<{
     _id: string;
@@ -1901,6 +1620,7 @@ export type SubmissionListQueryResult = Array<{
         _weak?: boolean;
         [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
       };
+      media?: unknown;
       hotspot?: SanityImageHotspot;
       crop?: SanityImageCrop;
       alt?: string;
@@ -1984,6 +1704,7 @@ export type PageQueryResult = {
       _weak?: boolean;
       [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
     };
+    media?: unknown;
     hotspot?: SanityImageHotspot;
     crop?: SanityImageCrop;
     alt?: string;
@@ -2026,6 +1747,7 @@ export type BlogPostQueryResult = {
         _weak?: boolean;
         [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
       };
+      media?: unknown;
       hotspot?: SanityImageHotspot;
       crop?: SanityImageCrop;
       alt?: string;
@@ -2104,6 +1826,7 @@ export type BlogPostQueryResult = {
       _weak?: boolean;
       [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
     };
+    media?: unknown;
     hotspot?: SanityImageHotspot;
     crop?: SanityImageCrop;
     alt?: string;
@@ -2124,6 +1847,7 @@ export type BlogPostQueryResult = {
       _weak?: boolean;
       [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
     };
+    media?: unknown;
     hotspot?: SanityImageHotspot;
     crop?: SanityImageCrop;
     alt?: string;
@@ -2181,6 +1905,7 @@ export type BlogPostMetadataQueryResult = {
       _weak?: boolean;
       [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
     };
+    media?: unknown;
     hotspot?: SanityImageHotspot;
     crop?: SanityImageCrop;
     alt?: string;
@@ -2238,6 +1963,7 @@ export type BlogPostListQueryResult = Array<{
       _weak?: boolean;
       [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
     };
+    media?: unknown;
     hotspot?: SanityImageHotspot;
     crop?: SanityImageCrop;
     alt?: string;
@@ -2295,6 +2021,7 @@ export type BlogPostListOfLatestQueryResult = Array<{
       _weak?: boolean;
       [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
     };
+    media?: unknown;
     hotspot?: SanityImageHotspot;
     crop?: SanityImageCrop;
     alt?: string;
@@ -2424,14 +2151,14 @@ export type PageListQueryForSitemapResult = Array<{
 import "@sanity/client";
 declare module "@sanity/client" {
   interface SanityQueries {
-    "*[_type == \"item\" && _id == $id][0] {\n  \n  _id,\n  _createdAt,\n  name,\n  slug,\n  description,\n  link,\n  affiliateLink,\n  sponsor,\n  sponsorStartDate,\n  sponsorEndDate,\n  note,\n  featured,\n  icon {\n    ...,\n    \"blurDataURL\": asset->metadata.lqip,\n    \"imageColor\": asset->metadata.palette.dominant.background,\n  },\n  image {\n    ...,\n    \"blurDataURL\": asset->metadata.lqip,\n    \"imageColor\": asset->metadata.palette.dominant.background,\n  },\n  publishDate,\n  paid,\n  order,\n  pricePlan,\n  freePlanStatus,\n  proPlanStatus,\n  sponsorPlanStatus,\n  rejectionReason,\n  submitter->,\n  collections[]->,\n  categories[]->,\n  tags[]->,\n\n}": ItemByIdQueryResult;
-    "*[_type == \"item\" && slug.current == $slug][0] {\n  \n  _id,\n  _createdAt,\n  name,\n  slug,\n  description,\n  link,\n  affiliateLink,\n  sponsor,\n  sponsorStartDate,\n  sponsorEndDate,\n  note,\n  featured,\n  icon {\n    ...,\n    \"blurDataURL\": asset->metadata.lqip,\n    \"imageColor\": asset->metadata.palette.dominant.background,\n  },\n  image {\n    ...,\n    \"blurDataURL\": asset->metadata.lqip,\n    \"imageColor\": asset->metadata.palette.dominant.background,\n  },\n  publishDate,\n  paid,\n  order,\n  pricePlan,\n  freePlanStatus,\n  proPlanStatus,\n  sponsorPlanStatus,\n  rejectionReason,\n  submitter->,\n  collections[]->,\n  categories[]->,\n  tags[]->,\n\n}": ItemInfoBySlugQueryResult;
-    "*[_type == \"item\" && _id == $id][0] {\n  \n  \n  _id,\n  _createdAt,\n  name,\n  slug,\n  description,\n  link,\n  affiliateLink,\n  sponsor,\n  sponsorStartDate,\n  sponsorEndDate,\n  note,\n  featured,\n  icon {\n    ...,\n    \"blurDataURL\": asset->metadata.lqip,\n    \"imageColor\": asset->metadata.palette.dominant.background,\n  },\n  image {\n    ...,\n    \"blurDataURL\": asset->metadata.lqip,\n    \"imageColor\": asset->metadata.palette.dominant.background,\n  },\n  publishDate,\n  paid,\n  order,\n  pricePlan,\n  freePlanStatus,\n  proPlanStatus,\n  sponsorPlanStatus,\n  rejectionReason,\n  submitter->,\n  collections[]->,\n  categories[]->,\n  tags[]->,\n\n  introduction,\n\n}": ItemFullInfoByIdQueryResult;
-    "*[_type == \"item\" && slug.current == $slug \n&& forceHidden != true] [0] {\n  \n  introduction,\n  \"related\": *[_type == \"item\" && defined(slug.current) \n    && defined(publishDate) \n    && forceHidden != true\n    && sponsor != true\n    && count(categories[@._ref in ^.^.categories[]._ref]) > 0 && _id != ^._id] \n    | order(publishedDate desc, _createdAt desc) [0...3] {\n      \n  _id,\n  _createdAt,\n  name,\n  slug,\n  description,\n  link,\n  affiliateLink,\n  sponsor,\n  sponsorStartDate,\n  sponsorEndDate,\n  note,\n  featured,\n  icon {\n    ...,\n    \"blurDataURL\": asset->metadata.lqip,\n    \"imageColor\": asset->metadata.palette.dominant.background,\n  },\n  image {\n    ...,\n    \"blurDataURL\": asset->metadata.lqip,\n    \"imageColor\": asset->metadata.palette.dominant.background,\n  },\n  publishDate,\n  paid,\n  order,\n  pricePlan,\n  freePlanStatus,\n  proPlanStatus,\n  sponsorPlanStatus,\n  rejectionReason,\n  submitter->,\n  collections[]->,\n  categories[]->,\n  tags[]->,\n\n  },\n  \n  _id,\n  _createdAt,\n  name,\n  slug,\n  description,\n  link,\n  affiliateLink,\n  sponsor,\n  sponsorStartDate,\n  sponsorEndDate,\n  note,\n  featured,\n  icon {\n    ...,\n    \"blurDataURL\": asset->metadata.lqip,\n    \"imageColor\": asset->metadata.palette.dominant.background,\n  },\n  image {\n    ...,\n    \"blurDataURL\": asset->metadata.lqip,\n    \"imageColor\": asset->metadata.palette.dominant.background,\n  },\n  publishDate,\n  paid,\n  order,\n  pricePlan,\n  freePlanStatus,\n  proPlanStatus,\n  sponsorPlanStatus,\n  rejectionReason,\n  submitter->,\n  collections[]->,\n  categories[]->,\n  tags[]->,\n\n\n}": ItemFullInfoBySlugQueryResult;
-    "*[_type == \"item\" && defined(slug.current) \n  && defined(publishDate)\n  && forceHidden != true\n  && sponsor != true]\n  | order(coalesce(featured, false) desc, publishDate desc) {\n    \n  _id,\n  _createdAt,\n  name,\n  slug,\n  description,\n  link,\n  affiliateLink,\n  sponsor,\n  sponsorStartDate,\n  sponsorEndDate,\n  note,\n  featured,\n  icon {\n    ...,\n    \"blurDataURL\": asset->metadata.lqip,\n    \"imageColor\": asset->metadata.palette.dominant.background,\n  },\n  image {\n    ...,\n    \"blurDataURL\": asset->metadata.lqip,\n    \"imageColor\": asset->metadata.palette.dominant.background,\n  },\n  publishDate,\n  paid,\n  order,\n  pricePlan,\n  freePlanStatus,\n  proPlanStatus,\n  sponsorPlanStatus,\n  rejectionReason,\n  submitter->,\n  collections[]->,\n  categories[]->,\n  tags[]->,\n\n}": ItemListQueryResult;
-    "*[_type == \"item\" && defined(slug.current) \n  && defined(publishDate)\n  && forceHidden != true\n  && sponsor == true\n  && sponsorStartDate <= now()\n  && sponsorEndDate >= now()] \n  | order(coalesce(featured, false) desc, publishDate desc) {\n    \n  _id,\n  _createdAt,\n  name,\n  slug,\n  description,\n  link,\n  affiliateLink,\n  sponsor,\n  sponsorStartDate,\n  sponsorEndDate,\n  note,\n  featured,\n  icon {\n    ...,\n    \"blurDataURL\": asset->metadata.lqip,\n    \"imageColor\": asset->metadata.palette.dominant.background,\n  },\n  image {\n    ...,\n    \"blurDataURL\": asset->metadata.lqip,\n    \"imageColor\": asset->metadata.palette.dominant.background,\n  },\n  publishDate,\n  paid,\n  order,\n  pricePlan,\n  freePlanStatus,\n  proPlanStatus,\n  sponsorPlanStatus,\n  rejectionReason,\n  submitter->,\n  collections[]->,\n  categories[]->,\n  tags[]->,\n\n}": SponsorItemListQueryResult;
-    "*[_type == \"item\" && defined(slug.current) \n  && defined(publishDate) \n  && forceHidden != true \n  && sponsor != true\n  && featured == true] \n  | order(coalesce(featured, false) desc, publishDate desc) [0...$count] {\n    \n  _id,\n  _createdAt,\n  name,\n  slug,\n  description,\n  link,\n  affiliateLink,\n  sponsor,\n  sponsorStartDate,\n  sponsorEndDate,\n  note,\n  featured,\n  icon {\n    ...,\n    \"blurDataURL\": asset->metadata.lqip,\n    \"imageColor\": asset->metadata.palette.dominant.background,\n  },\n  image {\n    ...,\n    \"blurDataURL\": asset->metadata.lqip,\n    \"imageColor\": asset->metadata.palette.dominant.background,\n  },\n  publishDate,\n  paid,\n  order,\n  pricePlan,\n  freePlanStatus,\n  proPlanStatus,\n  sponsorPlanStatus,\n  rejectionReason,\n  submitter->,\n  collections[]->,\n  categories[]->,\n  tags[]->,\n\n}": ItemListOfFeaturedQueryResult;
-    "*[_type == \"item\" && defined(slug.current) \n  && defined(publishDate) \n  && forceHidden != true\n  && sponsor != true] \n  | order(coalesce(featured, false) desc, publishDate desc) [0...$count] {\n    \n  _id,\n  _createdAt,\n  name,\n  slug,\n  description,\n  link,\n  affiliateLink,\n  sponsor,\n  sponsorStartDate,\n  sponsorEndDate,\n  note,\n  featured,\n  icon {\n    ...,\n    \"blurDataURL\": asset->metadata.lqip,\n    \"imageColor\": asset->metadata.palette.dominant.background,\n  },\n  image {\n    ...,\n    \"blurDataURL\": asset->metadata.lqip,\n    \"imageColor\": asset->metadata.palette.dominant.background,\n  },\n  publishDate,\n  paid,\n  order,\n  pricePlan,\n  freePlanStatus,\n  proPlanStatus,\n  sponsorPlanStatus,\n  rejectionReason,\n  submitter->,\n  collections[]->,\n  categories[]->,\n  tags[]->,\n\n}": ItemListOfLatestQueryResult;
+    "*[_type == \"item\" && _id == $id][0] {\n  \n  _id,\n  _createdAt,\n  name,\n  slug,\n  description,\n  link,\n  affiliateLink,\n  \"sponsor\": false,\n  sponsorStartDate,\n  sponsorEndDate,\n  \"note\": null,\n  featured,\n  icon {\n    ...,\n    \"blurDataURL\": asset->metadata.lqip,\n    \"imageColor\": asset->metadata.palette.dominant.background,\n  },\n  image {\n    ...,\n    \"blurDataURL\": asset->metadata.lqip,\n    \"imageColor\": asset->metadata.palette.dominant.background,\n  },\n  publishDate,\n  paid,\n  \"order\": null,\n  pricePlan,\n  freePlanStatus,\n  proPlanStatus,\n  sponsorPlanStatus,\n  \"rejectionReason\": null,\n  submitter->{_id, name, image, link},\n  collections[]->,\n  categories[]->,\n  tags[]->,\n\n}": ItemByIdQueryResult;
+    "*[_type == \"item\" && slug.current == $slug && defined(publishDate) && publishDate <= now() && forceHidden != true][0] {\n  \n  _id,\n  _createdAt,\n  name,\n  slug,\n  description,\n  link,\n  affiliateLink,\n  \"sponsor\": false,\n  sponsorStartDate,\n  sponsorEndDate,\n  \"note\": null,\n  featured,\n  icon {\n    ...,\n    \"blurDataURL\": asset->metadata.lqip,\n    \"imageColor\": asset->metadata.palette.dominant.background,\n  },\n  image {\n    ...,\n    \"blurDataURL\": asset->metadata.lqip,\n    \"imageColor\": asset->metadata.palette.dominant.background,\n  },\n  publishDate,\n  paid,\n  \"order\": null,\n  pricePlan,\n  freePlanStatus,\n  proPlanStatus,\n  sponsorPlanStatus,\n  \"rejectionReason\": null,\n  submitter->{_id, name, image, link},\n  collections[]->,\n  categories[]->,\n  tags[]->,\n\n}": ItemInfoBySlugQueryResult;
+    "*[_type == \"item\" && _id == $id][0] {\n  \n  \n  _id,\n  _createdAt,\n  name,\n  slug,\n  description,\n  link,\n  affiliateLink,\n  \"sponsor\": false,\n  sponsorStartDate,\n  sponsorEndDate,\n  \"note\": null,\n  featured,\n  icon {\n    ...,\n    \"blurDataURL\": asset->metadata.lqip,\n    \"imageColor\": asset->metadata.palette.dominant.background,\n  },\n  image {\n    ...,\n    \"blurDataURL\": asset->metadata.lqip,\n    \"imageColor\": asset->metadata.palette.dominant.background,\n  },\n  publishDate,\n  paid,\n  \"order\": null,\n  pricePlan,\n  freePlanStatus,\n  proPlanStatus,\n  sponsorPlanStatus,\n  \"rejectionReason\": null,\n  submitter->{_id, name, image, link},\n  collections[]->,\n  categories[]->,\n  tags[]->,\n\n  introduction,\n\n}": ItemFullInfoByIdQueryResult;
+    "*[_type == \"item\" && slug.current == $slug\n&& defined(publishDate) && publishDate <= now() && forceHidden != true] [0] {\n  \n  introduction,\n  \"related\": *[_type == \"item\" && defined(slug.current) \n    && defined(publishDate) && publishDate <= now()\n    && forceHidden != true\n    && sponsor != true\n    && count(categories[@._ref in ^.^.categories[]._ref]) > 0 && _id != ^._id] \n    | order(publishDate desc, _id asc) [0...3] {\n      \n  _id,\n  _createdAt,\n  name,\n  slug,\n  description,\n  link,\n  affiliateLink,\n  \"sponsor\": false,\n  sponsorStartDate,\n  sponsorEndDate,\n  \"note\": null,\n  featured,\n  icon {\n    ...,\n    \"blurDataURL\": asset->metadata.lqip,\n    \"imageColor\": asset->metadata.palette.dominant.background,\n  },\n  image {\n    ...,\n    \"blurDataURL\": asset->metadata.lqip,\n    \"imageColor\": asset->metadata.palette.dominant.background,\n  },\n  publishDate,\n  paid,\n  \"order\": null,\n  pricePlan,\n  freePlanStatus,\n  proPlanStatus,\n  sponsorPlanStatus,\n  \"rejectionReason\": null,\n  submitter->{_id, name, image, link},\n  collections[]->,\n  categories[]->,\n  tags[]->,\n\n  },\n  \n  _id,\n  _createdAt,\n  name,\n  slug,\n  description,\n  link,\n  affiliateLink,\n  \"sponsor\": false,\n  sponsorStartDate,\n  sponsorEndDate,\n  \"note\": null,\n  featured,\n  icon {\n    ...,\n    \"blurDataURL\": asset->metadata.lqip,\n    \"imageColor\": asset->metadata.palette.dominant.background,\n  },\n  image {\n    ...,\n    \"blurDataURL\": asset->metadata.lqip,\n    \"imageColor\": asset->metadata.palette.dominant.background,\n  },\n  publishDate,\n  paid,\n  \"order\": null,\n  pricePlan,\n  freePlanStatus,\n  proPlanStatus,\n  sponsorPlanStatus,\n  \"rejectionReason\": null,\n  submitter->{_id, name, image, link},\n  collections[]->,\n  categories[]->,\n  tags[]->,\n\n\n}": ItemFullInfoBySlugQueryResult;
+    "*[_type == \"item\" && defined(slug.current) \n  && defined(publishDate)\n  && forceHidden != true\n  && sponsor != true]\n  | order(coalesce(featured, false) desc, publishDate desc) {\n    \n  _id,\n  _createdAt,\n  name,\n  slug,\n  description,\n  link,\n  affiliateLink,\n  \"sponsor\": false,\n  sponsorStartDate,\n  sponsorEndDate,\n  \"note\": null,\n  featured,\n  icon {\n    ...,\n    \"blurDataURL\": asset->metadata.lqip,\n    \"imageColor\": asset->metadata.palette.dominant.background,\n  },\n  image {\n    ...,\n    \"blurDataURL\": asset->metadata.lqip,\n    \"imageColor\": asset->metadata.palette.dominant.background,\n  },\n  publishDate,\n  paid,\n  \"order\": null,\n  pricePlan,\n  freePlanStatus,\n  proPlanStatus,\n  sponsorPlanStatus,\n  \"rejectionReason\": null,\n  submitter->{_id, name, image, link},\n  collections[]->,\n  categories[]->,\n  tags[]->,\n\n}": ItemListQueryResult;
+    "*[_type == \"item\" && false && defined(slug.current) \n  && defined(publishDate)\n  && forceHidden != true\n  && sponsor == true\n  && sponsorStartDate <= now()\n  && sponsorEndDate >= now()] \n  | order(coalesce(featured, false) desc, publishDate desc) {\n    \n  _id,\n  _createdAt,\n  name,\n  slug,\n  description,\n  link,\n  affiliateLink,\n  \"sponsor\": false,\n  sponsorStartDate,\n  sponsorEndDate,\n  \"note\": null,\n  featured,\n  icon {\n    ...,\n    \"blurDataURL\": asset->metadata.lqip,\n    \"imageColor\": asset->metadata.palette.dominant.background,\n  },\n  image {\n    ...,\n    \"blurDataURL\": asset->metadata.lqip,\n    \"imageColor\": asset->metadata.palette.dominant.background,\n  },\n  publishDate,\n  paid,\n  \"order\": null,\n  pricePlan,\n  freePlanStatus,\n  proPlanStatus,\n  sponsorPlanStatus,\n  \"rejectionReason\": null,\n  submitter->{_id, name, image, link},\n  collections[]->,\n  categories[]->,\n  tags[]->,\n\n}": SponsorItemListQueryResult;
+    "*[_type == \"item\" && defined(slug.current) \n  && defined(publishDate) \n  && forceHidden != true \n  && sponsor != true\n  && featured == true] \n  | order(coalesce(featured, false) desc, publishDate desc) [0...$count] {\n    \n  _id,\n  _createdAt,\n  name,\n  slug,\n  description,\n  link,\n  affiliateLink,\n  \"sponsor\": false,\n  sponsorStartDate,\n  sponsorEndDate,\n  \"note\": null,\n  featured,\n  icon {\n    ...,\n    \"blurDataURL\": asset->metadata.lqip,\n    \"imageColor\": asset->metadata.palette.dominant.background,\n  },\n  image {\n    ...,\n    \"blurDataURL\": asset->metadata.lqip,\n    \"imageColor\": asset->metadata.palette.dominant.background,\n  },\n  publishDate,\n  paid,\n  \"order\": null,\n  pricePlan,\n  freePlanStatus,\n  proPlanStatus,\n  sponsorPlanStatus,\n  \"rejectionReason\": null,\n  submitter->{_id, name, image, link},\n  collections[]->,\n  categories[]->,\n  tags[]->,\n\n}": ItemListOfFeaturedQueryResult;
+    "*[_type == \"item\" && defined(slug.current) \n  && defined(publishDate) \n  && forceHidden != true\n  && sponsor != true] \n  | order(coalesce(featured, false) desc, publishDate desc) [0...$count] {\n    \n  _id,\n  _createdAt,\n  name,\n  slug,\n  description,\n  link,\n  affiliateLink,\n  \"sponsor\": false,\n  sponsorStartDate,\n  sponsorEndDate,\n  \"note\": null,\n  featured,\n  icon {\n    ...,\n    \"blurDataURL\": asset->metadata.lqip,\n    \"imageColor\": asset->metadata.palette.dominant.background,\n  },\n  image {\n    ...,\n    \"blurDataURL\": asset->metadata.lqip,\n    \"imageColor\": asset->metadata.palette.dominant.background,\n  },\n  publishDate,\n  paid,\n  \"order\": null,\n  pricePlan,\n  freePlanStatus,\n  proPlanStatus,\n  sponsorPlanStatus,\n  \"rejectionReason\": null,\n  submitter->{_id, name, image, link},\n  collections[]->,\n  categories[]->,\n  tags[]->,\n\n}": ItemListOfLatestQueryResult;
     "*[_type == \"collection\" && defined(slug.current)] \n  | order(priority desc) {\n    \n  ...,\n  icon {\n    ...,\n    \"blurDataURL\": asset->metadata.lqip,\n    \"imageColor\": asset->metadata.palette.dominant.background,\n  },\n\n}": CollectionListQueryResult;
     "*[_type == \"collection\" && slug.current == $slug][0] {\n  \n  ...,\n  icon {\n    ...,\n    \"blurDataURL\": asset->metadata.lqip,\n    \"imageColor\": asset->metadata.palette.dominant.background,\n  },\n\n}": CollectionQueryResult;
     "*[_type==\"group\"] | order(priority desc, _createdAt asc) {\n  \n  ...,\n  \"categories\": *[_type=='category' && references(^._id)] | order(priority desc, _createdAt asc)\n  { \n    ..., \n  }\n\n}": GroupListQueryResult;
@@ -2439,7 +2166,7 @@ declare module "@sanity/client" {
     "*[_type == \"category\" && slug.current == $slug][0] {\n  \n  ...,\n\n}": CategoryQueryResult;
     "*[_type == \"tag\" && defined(slug.current)] \n  | order(slug.current asc) {\n    \n  ...,\n\n}": TagListQueryResult;
     "*[_type == \"tag\" && slug.current == $slug][0] {\n  \n  ...,\n\n}": TagQueryResult;
-    "*[_type == \"item\" && defined(slug.current)\n  && submitter._ref == $userId] \n  | order(_createdAt desc) {\n    \n  _id,\n  _createdAt,\n  name,\n  slug,\n  description,\n  link,\n  affiliateLink,\n  sponsor,\n  sponsorStartDate,\n  sponsorEndDate,\n  note,\n  featured,\n  icon {\n    ...,\n    \"blurDataURL\": asset->metadata.lqip,\n    \"imageColor\": asset->metadata.palette.dominant.background,\n  },\n  image {\n    ...,\n    \"blurDataURL\": asset->metadata.lqip,\n    \"imageColor\": asset->metadata.palette.dominant.background,\n  },\n  publishDate,\n  paid,\n  order,\n  pricePlan,\n  freePlanStatus,\n  proPlanStatus,\n  sponsorPlanStatus,\n  rejectionReason,\n  submitter->,\n  collections[]->,\n  categories[]->,\n  tags[]->,\n\n}": SubmissionListQueryResult;
+    "*[_type == \"item\" && defined(slug.current)\n  && submitter._ref == $userId] \n  | order(_createdAt desc) {\n    \n  _id,\n  _createdAt,\n  name,\n  slug,\n  description,\n  link,\n  affiliateLink,\n  \"sponsor\": false,\n  sponsorStartDate,\n  sponsorEndDate,\n  \"note\": null,\n  featured,\n  icon {\n    ...,\n    \"blurDataURL\": asset->metadata.lqip,\n    \"imageColor\": asset->metadata.palette.dominant.background,\n  },\n  image {\n    ...,\n    \"blurDataURL\": asset->metadata.lqip,\n    \"imageColor\": asset->metadata.palette.dominant.background,\n  },\n  publishDate,\n  paid,\n  \"order\": null,\n  pricePlan,\n  freePlanStatus,\n  proPlanStatus,\n  sponsorPlanStatus,\n  \"rejectionReason\": null,\n  submitter->{_id, name, image, link},\n  collections[]->,\n  categories[]->,\n  tags[]->,\n\n}": SubmissionListQueryResult;
     "\n  *[_type == \"page\" && slug.current == $slug][0] {\n    ...,\n    body[]{\n      ...,\n      markDefs[]{\n        ...,\n        _type == \"internalLink\" => {\n          \"slug\": @.reference->slug\n        }\n      }\n    },\n  }\n": PageQueryResult;
     "\n  *[_type == \"blogCategory\" && defined(slug.current)] \n  | order(priority desc) {\n    \n  name,\n  slug,\n  description,\n  priority,\n\n}": BlogCategoryListQueryResult;
     "\n  *[_type == \"blogCategory\" && slug.current == $slug][0] {\n    \n  name,\n  slug,\n  description,\n  priority,\n\n  }\n": BlogCategoryMetadateQueryResult;

@@ -6,13 +6,11 @@ import {
   fontSourceSerif,
   fontWorkSans,
 } from "@/assets/fonts";
-import { auth } from "@/auth";
-import { Analytics } from "@/components/analytics/analytics";
+
 import { TailwindIndicator } from "@/components/tailwind-indicator";
 import { Toaster } from "@/components/ui/sonner";
 import { constructMetadata } from "@/lib/metadata";
 import { cn } from "@/lib/utils";
-import { SessionProvider } from "next-auth/react";
 import { ThemeProvider } from "next-themes";
 
 export const metadata = constructMetadata();
@@ -22,9 +20,6 @@ interface RootLayoutProps {
 }
 
 export default async function RootLayout({ children }: RootLayoutProps) {
-  // https://youtu.be/1MTyCvS05V4?t=21464
-  const session = await auth();
-
   return (
     <html lang="en" suppressHydrationWarning>
       <head />
@@ -41,23 +36,19 @@ export default async function RootLayout({ children }: RootLayoutProps) {
           fontBricolage.variable,
         )}
       >
-        <SessionProvider session={session}>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
-            {children}
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          {children}
 
-            {/* https://sonner.emilkowal.ski/toaster */}
-            <Toaster richColors position="top-right" offset={64} />
+          {/* https://sonner.emilkowal.ski/toaster */}
+          <Toaster richColors position="top-right" offset={64} />
 
-            <TailwindIndicator />
-
-            <Analytics />
-          </ThemeProvider>
-        </SessionProvider>
+          <TailwindIndicator />
+        </ThemeProvider>
       </body>
     </html>
   );

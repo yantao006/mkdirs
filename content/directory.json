@@ -1,0 +1,146 @@
+[
+  {
+    "slug": "mdn-web-docs",
+    "name": "MDN Web Docs",
+    "url": "https://developer.mozilla.org/",
+    "description": "Reference documentation and learning guides for HTML, CSS, JavaScript, and the web platform.",
+    "category": "documentation",
+    "tags": ["web", "learning"],
+    "collection": "learn-the-web"
+  },
+  {
+    "slug": "devdocs",
+    "name": "DevDocs",
+    "url": "https://devdocs.io/",
+    "description": "Searchable API documentation for programming languages, frameworks, and developer tools in one interface.",
+    "category": "documentation",
+    "tags": ["web", "learning"],
+    "collection": "learn-the-web"
+  },
+  {
+    "slug": "typescript",
+    "name": "TypeScript",
+    "url": "https://www.typescriptlang.org/",
+    "description": "JavaScript with syntax for types, with a compiler and documentation for building typed applications.",
+    "category": "languages-runtimes",
+    "tags": ["javascript", "open-source"],
+    "collection": "web-development"
+  },
+  {
+    "slug": "nodejs",
+    "name": "Node.js",
+    "url": "https://nodejs.org/",
+    "description": "A JavaScript runtime for building servers, command-line tools, and scripts outside the browser.",
+    "category": "languages-runtimes",
+    "tags": ["javascript", "open-source"],
+    "collection": "web-development"
+  },
+  {
+    "slug": "deno",
+    "name": "Deno",
+    "url": "https://deno.com/",
+    "description": "A runtime for JavaScript, TypeScript, and WebAssembly with integrated development tools.",
+    "category": "languages-runtimes",
+    "tags": ["javascript", "open-source"],
+    "collection": "web-development"
+  },
+  {
+    "slug": "react",
+    "name": "React",
+    "url": "https://react.dev/",
+    "description": "A library for building web and native user interfaces from reusable components.",
+    "category": "frameworks-ui",
+    "tags": ["javascript", "open-source"],
+    "collection": "web-development"
+  },
+  {
+    "slug": "nextjs",
+    "name": "Next.js",
+    "url": "https://nextjs.org/",
+    "description": "A React framework for full-stack web applications, including routing and server rendering.",
+    "category": "frameworks-ui",
+    "tags": ["javascript", "open-source"],
+    "collection": "web-development"
+  },
+  {
+    "slug": "tailwind-css",
+    "name": "Tailwind CSS",
+    "url": "https://tailwindcss.com/",
+    "description": "A utility-first CSS framework for composing custom interfaces directly in markup.",
+    "category": "frameworks-ui",
+    "tags": ["web", "open-source"],
+    "collection": "web-development"
+  },
+  {
+    "slug": "shadcn-ui",
+    "name": "shadcn/ui",
+    "url": "https://ui.shadcn.com/",
+    "description": "A collection of accessible UI components that can be added to and customized in your project.",
+    "category": "frameworks-ui",
+    "tags": ["web", "open-source"],
+    "collection": "web-development"
+  },
+  {
+    "slug": "visual-studio-code",
+    "name": "Visual Studio Code",
+    "url": "https://code.visualstudio.com/",
+    "description": "A code editor with debugging, source-control integration, and an extension ecosystem.",
+    "category": "developer-tools",
+    "tags": ["editor", "web"],
+    "collection": "developer-toolbox"
+  },
+  {
+    "slug": "github",
+    "name": "GitHub",
+    "url": "https://github.com/",
+    "description": "A platform for hosting Git repositories and collaborating through issues, pull requests, and automation.",
+    "category": "developer-tools",
+    "tags": ["collaboration", "web"],
+    "collection": "developer-toolbox"
+  },
+  {
+    "slug": "biome",
+    "name": "Biome",
+    "url": "https://biomejs.dev/",
+    "description": "An integrated formatter and linter for maintaining consistent code in web projects.",
+    "category": "developer-tools",
+    "tags": ["javascript", "open-source"],
+    "collection": "developer-toolbox"
+  },
+  {
+    "slug": "prettier",
+    "name": "Prettier",
+    "url": "https://prettier.io/",
+    "description": "An opinionated code formatter that supports multiple languages and editor integrations.",
+    "category": "developer-tools",
+    "tags": ["javascript", "open-source"],
+    "collection": "developer-toolbox"
+  },
+  {
+    "slug": "eslint",
+    "name": "ESLint",
+    "url": "https://eslint.org/",
+    "description": "A configurable tool for finding and fixing problems in JavaScript code.",
+    "category": "developer-tools",
+    "tags": ["javascript", "open-source"],
+    "collection": "developer-toolbox"
+  },
+  {
+    "slug": "playwright",
+    "name": "Playwright",
+    "url": "https://playwright.dev/",
+    "description": "A browser automation framework for testing web applications across browser engines.",
+    "category": "testing",
+    "tags": ["testing", "open-source"],
+    "collection": "developer-toolbox"
+  },
+  {
+    "slug": "vitest",
+    "name": "Vitest",
+    "url": "https://vitest.dev/",
+    "description": "A testing framework powered by Vite for JavaScript and TypeScript projects.",
+    "category": "testing",
+    "tags": ["testing", "javascript", "open-source"],
+    "collection": "developer-toolbox"
+  }
+]

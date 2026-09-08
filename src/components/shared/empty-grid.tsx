@@ -1,9 +1,21 @@
+import Link from "next/link";
+
 export default function EmptyGrid() {
   return (
-    <div>
-      <div className="my-8 h-32 w-full flex items-center justify-center">
-        <p className="font-medium text-muted-foreground">Nothing found.</p>
-      </div>
+    <div
+      className="my-12 flex flex-col items-center gap-3 text-center"
+      aria-live="polite"
+    >
+      <h2 className="text-xl font-semibold">No matching resources</h2>
+      <p className="text-muted-foreground">
+        Try a different search or clear your filters.
+      </p>
+      <Link
+        href="/"
+        className="font-medium text-primary underline underline-offset-4"
+      >
+        Browse all resources
+      </Link>
     </div>
   );
 }

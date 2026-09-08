@@ -1,7 +1,9 @@
 "use server";
 
-import { signOut } from "@/auth";
+import type { signOut } from "@/auth";
 
 export const logout = async () => {
-  await signOut();
+  throw new Error(
+    "This directory is read-only. Template service actions are disabled.",
+  );
 };

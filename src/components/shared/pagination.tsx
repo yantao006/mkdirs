@@ -9,7 +9,8 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import { useRouter, useSearchParams } from "next/navigation";
+import { normalizePage } from "@/lib/directory-query";
+import { useSearchParams } from "next/navigation";
 
 type CustomPaginationProps = {
   totalPages: number;
@@ -20,15 +21,14 @@ export default function CustomPagination({
   totalPages,
   routePrefix,
 }: CustomPaginationProps) {
-  const router = useRouter();
   const searchParams = useSearchParams();
-  const currentPage = Number(searchParams.get("page")) || 1;
-
-  const handlePageChange = (page: number | string) => {
+  const currentPage = normalizePage(searchParams.get("page"));
+  const pageUrl = (page: number | string) => {
     const params = new URLSearchParams(searchParams);
     params.set("page", page.toString());
-    router.push(`${routePrefix}?${params.toString()}`);
+    return `${routePrefix}?${params.toString()}`;
   };
+  if (totalPages <= 1) return null;
 
   const allPages = generatePagination(currentPage, totalPages);
 
@@ -37,11 +37,8 @@ export default function CustomPagination({
       <PaginationContent>
         <PaginationItem>
           <PaginationPrevious
-            onClick={
-              currentPage > 1
-                ? () => handlePageChange(currentPage - 1)
-                : undefined
-            }
+            href={currentPage > 1 ? pageUrl(currentPage - 1) : undefined}
+            tabIndex={currentPage <= 1 ? -1 : undefined}
             aria-disabled={currentPage <= 1}
             className={
               currentPage <= 1
@@ -57,7 +54,8 @@ export default function CustomPagination({
               <PaginationEllipsis />
             ) : (
               <PaginationLink
-                onClick={() => handlePageChange(page)}
+                href={pageUrl(page)}
+                aria-label={`Page ${page}`}
                 isActive={currentPage === page}
                 className={currentPage === page ? "" : "cursor-pointer"}
               >
@@ -69,11 +67,10 @@ export default function CustomPagination({
 
         <PaginationItem>
           <PaginationNext
-            onClick={
-              currentPage < totalPages
-                ? () => handlePageChange(currentPage + 1)
-                : undefined
+            href={
+              currentPage < totalPages ? pageUrl(currentPage + 1) : undefined
             }
+            tabIndex={currentPage >= totalPages ? -1 : undefined}
             aria-disabled={currentPage >= totalPages}
             className={
               currentPage >= totalPages

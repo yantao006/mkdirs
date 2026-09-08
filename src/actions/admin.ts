@@ -1,7 +1,7 @@
 "use server";
 
-import { currentRole } from "@/lib/auth";
-import { UserRole } from "@/types/user-role";
+import type { currentRole } from "@/lib/auth";
+import type { UserRole } from "@/types/user-role";
 
 export type ServerActionResponse = {
   status: "success" | "error";
@@ -13,11 +13,7 @@ export type ServerActionResponse = {
  * and return different responses according to different roles.
  */
 export async function admin(): Promise<ServerActionResponse> {
-  const role = await currentRole();
-
-  if (role === UserRole.ADMIN) {
-    return { status: "success", message: "Allowed Server Action!" };
-  }
-
-  return { status: "error", message: "Forbidden Server Action!" };
+  throw new Error(
+    "This directory is read-only. Template service actions are disabled.",
+  );
 }

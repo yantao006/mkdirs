@@ -6,6 +6,7 @@ import CustomPagination from "@/components/shared/pagination";
 import { siteConfig } from "@/config/site";
 import { getCollections } from "@/data/collection";
 import { COLLECTIONS_PER_PAGE } from "@/lib/constants";
+import { normalizePage, normalizeSearchParams } from "@/lib/directory-query";
 import { constructMetadata } from "@/lib/metadata";
 
 export const metadata = constructMetadata({
@@ -19,12 +20,14 @@ export const metadata = constructMetadata({
  * https://bestdirectories.org/collections
  */
 export default async function CollectionIndexPage({
-  searchParams,
+  searchParams: searchParamsPromise,
 }: {
-  searchParams?: { [key: string]: string | string[] | undefined };
+  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
+  const searchParams = normalizeSearchParams(await searchParamsPromise);
+
   const { page } = searchParams as { [key: string]: string };
-  const currentPage = page ? Number(page) : 1;
+  const currentPage = normalizePage(page);
   const { collections, totalCount } = await getCollections({
     currentPage,
   });

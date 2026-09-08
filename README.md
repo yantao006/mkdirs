@@ -1,68 +1,63 @@
-# Mkdirs
+# mkdirs
 
-Launch AI-powered directory websites in minutes
+An independent directory of useful developer tools and web resources, built from the open-source [Mkdirs template](https://github.com/MkThingsHQ/mkdirs).
 
-[![License](https://img.shields.io/github/license/MkThingsHQ/mkdirs)](LICENSE)
+**Website:** https://mkdirs.yantao006.workers.dev
 
-Mkdirs helps you launch a directory website with listings, AI-assisted
-submissions, payments, authentication, CMS, blog, newsletter, SEO, themes,
-and more.
+## What works
 
-[Live Demo](https://demo.mkdirs.com) · [Documentation](https://docs.mkdirs.com) · [Installation Guide](https://docs.mkdirs.com/installation) · [Video Tutorials](https://www.youtube.com/@MkdirsHQ) · [Showcase](https://mkdirs.com/showcase)
+- Browse a curated starter catalog, search names and descriptions, and combine category and tag filters.
+- Explore categories, tags, collections, resource details, official external links, and paginated results.
+- Use the responsive navigation and light/dark themes.
+- Edit public content in Sanity Studio at `/studio`, or import reviewed entries from `content/directory.json`.
 
-![Mkdirs directory website template](public/og.png)
+The starter catalog contains 16 resources checked against their official websites.
+Its reference-card artwork is created for this directory, not copied product logos or website screenshots.
+Listings do not claim paid placement, traffic, ratings, endorsements, or current prices.
 
-## Features
+Accounts, OAuth, payments, newsletter delivery, AI generation, application uploads, and visitor submissions are **not enabled**.
+Their application routes are removed, template service actions reject calls, and the public Worker accepts only GET/HEAD requests.
+Sanity Studio uses the editor's own Sanity login directly, not an application account or a browser-embedded API token.
+Some dormant template modules remain as upstream reference, not supported product features.
 
-- Directory listings, categories, collections, tags, and search
-- AI-assisted website submission and content generation
-- User authentication and dashboard
-- Free, paid, and sponsored submissions with Stripe
-- Sanity CMS and blog
-- Email and newsletter integration with Resend
-- SEO, analytics, themes, and responsive layouts
-- Vercel and Docker deployment
+## Development and checks
 
-## Tech Stack
+Use Node.js 22 and pnpm 9.14.3.
 
-- [Next.js](https://nextjs.org) — Full-stack React framework.
-- [React](https://react.dev) — Library for building user interfaces.
-- [TypeScript](https://www.typescriptlang.org) — Typed JavaScript for safer development.
-- [Tailwind CSS](https://tailwindcss.com) — Utility-first CSS framework.
-- [Sanity](https://www.sanity.io) — Headless CMS for directory content and blog posts.
-- [Auth.js](https://authjs.dev) — Authentication for user accounts and sessions.
-- [Stripe](https://stripe.com) — Payments for paid and sponsored submissions.
-- [Resend](https://resend.com) — Transactional email and newsletter delivery.
+```sh
+pnpm install --frozen-lockfile
+cp .env.example .env.local
+pnpm test
+pnpm lint:check
+pnpm typecheck
+pnpm build:cloudflare
+```
 
-For installation, configuration, customization, deployment, and video
-tutorials, visit the [Mkdirs documentation](https://docs.mkdirs.com).
+`pnpm lint:check` is read-only.
+The inherited `pnpm lint` and `pnpm format` commands write files; do not use unsafe fixes.
+Sanity types are generated using `pnpm typegen` after changes to the schema or named queries, never edited manually.
 
-## Links
+The runtime is Next.js 15 / React 19 with the OpenNext Cloudflare adapter, retaining the template's Tailwind and shadcn design.
+Studio is loaded client-side to keep its editor dependencies out of the public Worker server bundle.
+No D1, R2, queue, payment service, or Cloudflare Images binding is required.
 
-- [Website](https://mkdirs.com) — Learn more about Mkdirs.
-- [Demo](https://demo.mkdirs.com) — Explore a live directory website built with Mkdirs.
-- [Documentation](https://docs.mkdirs.com) — Read installation, configuration, and deployment guides.
-- [YouTube](https://www.youtube.com/@MkdirsHQ) — Watch video tutorials and product updates.
-- [Discord](https://mksaas.link/discord) — Join the community and get help.
+See [operations and content updates](docs/operations.md) for importing content, deploying, rolling back, and validating the site.
+CI runs lint, type checking, regression tests, and the production Cloudflare build without secrets.
 
-## Author
+## Content and access boundaries
 
-[OpenFox](https://mksaas.link/fox-x) is an independent developer building products and developer tools. His products include:
+This product uses its own public Sanity dataset, containing public directory content only.
+Never put passwords, OAuth tokens, accounts, orders, private notes, or other secrets in it.
+The production app reads anonymously and has no Sanity editor token.
+An editor token is used only by the local import command, with an explicit target-project confirmation and non-overwriting imports.
 
-- [TanStarter](https://tanstarter.dev) — Ship Faster with TanStack, Cost Less with Cloudflare.
-- [MkSaaS](https://mksaas.com) — Make Your AI SaaS Product in a Weekend.
-- [MkImage](https://mkimage.ai) — Make Any Images Possible.
-- [Mkdirs](https://mkdirs.com) — Launch AI-powered directory in 30 minutes.
-- [MkDollar](https://mkdollar.com) — The all-in-one platform to help you make first dollar online.
+## Source and license
 
-## License
+The original Mkdirs template is by [MkThingsHQ](https://github.com/MkThingsHQ/mkdirs).
+This deployment is independently operated and is not the template author's demo or official service.
+The template author's contact details and commercial policies do not apply to this directory.
 
-Licensed under the [Apache License 2.0](LICENSE). You may use, modify, and
-distribute the code, including for commercial purposes, subject to the terms
-of the license.
-
-The license does not grant permission to use the Mkdirs name, logo, or other
-trademarks to identify or promote derived products. Reasonable use to describe
-the origin of the software, such as “Built with Mkdirs,” is permitted.
-
-Copyright © Mkdirs.
+Code is licensed under [Apache License 2.0](LICENSE), with the original license and attribution preserved.
+The license does **not** grant permission to use the Mkdirs name, logo, or other trademarks to identify or promote derived products.
+The project name `mkdirs` is retained at the project owner's direction; no trademark authorization is claimed, and the upstream logo is not used.
+Names of listed resources identify those resources and do not imply affiliation or endorsement.

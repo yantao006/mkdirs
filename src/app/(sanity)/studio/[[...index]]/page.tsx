@@ -1,11 +1,14 @@
 "use client";
 
-import config from "@/sanity.config";
-import { NextStudio } from "next-sanity/studio";
+import dynamic from "next/dynamic";
 
-/**
- * https://www.sanity.io/plugins/next-sanity#studio-route-with-app-router
- */
-export default function Studio() {
-  return <NextStudio config={config} />;
+// Studio authenticates directly with Sanity. Do not initialize its editor stack
+// in the public Worker's request path or include it in the server bundle.
+const Studio = dynamic(() => import("@/components/studio"), {
+  ssr: false,
+  loading: () => <p className="p-8">Loading mkdirs content editor…</p>,
+});
+
+export default function StudioPage() {
+  return <Studio />;
 }

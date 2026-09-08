@@ -2,80 +2,57 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { cn } from "@/lib/utils";
-import { createUrl } from "@/lib/utils";
 import { SearchIcon } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useSearchParams } from "next/navigation";
-import { useState } from "react";
-import { useEffect, useRef } from "react";
-import { useDebounce } from "use-debounce";
+import { useRouter, useSearchParams } from "next/navigation";
+import type { FormEvent } from "react";
 
-interface SearchBoxProps {
-  urlPrefix: string;
-}
-
-export default function HomeSearchBox({ urlPrefix }: SearchBoxProps) {
+export default function HomeSearchBox({ urlPrefix }: { urlPrefix: string }) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [searchQuery, setSearchQuery] = useState(searchParams?.get("q") || "");
-  const [debouncedQuery] = useDebounce(searchQuery, 300); // 300ms debounce
-  const lastExecutedQuery = useRef(searchParams?.get("q") || "");
-  const previousQueryRef = useRef("");
-  const isUserTypingRef = useRef(false);
-
-  useEffect(() => {
-    const currentQuery = searchParams?.get("q") || "";
-    if (currentQuery !== previousQueryRef.current && !isUserTypingRef.current) {
-      setSearchQuery(currentQuery);
-      previousQueryRef.current = currentQuery;
-    }
-  }, [searchParams]);
-
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
-  useEffect(() => {
-    if (debouncedQuery !== lastExecutedQuery.current) {
-      const newParams = new URLSearchParams(searchParams?.toString());
-      if (debouncedQuery) {
-        newParams.set("q", debouncedQuery);
-      } else {
-        newParams.delete("q");
-      }
-      newParams.delete("page");
-      const newUrl = createUrl(`${urlPrefix}`, newParams);
-      console.log(`useEffect, newUrl: ${newUrl}`);
-      lastExecutedQuery.current = debouncedQuery;
-      router.push(newUrl, { scroll: false });
-    }
-  }, [debouncedQuery, router, searchParams, urlPrefix]);
-
-  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    isUserTypingRef.current = true;
-    setSearchQuery(e.target.value);
-    
-    // Reset the flag to allow updates after URL changes (but give enough time to complete the current input)
-    setTimeout(() => {
-      isUserTypingRef.current = false;
-    }, 500);
-  };
-
+  const query = searchParams.get("q") || "";
+  function submit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const form = new FormData(event.currentTarget);
+    const params = new URLSearchParams(searchParams);
+    const value = String(form.get("q") || "").trim();
+    if (value) params.set("q", value);
+    else params.delete("q");
+    params.delete("page");
+    router.push(`${urlPrefix}?${params}`, { scroll: false });
+  }
   return (
-    <div className="flex items-center justify-center">
+    <form
+      action={urlPrefix}
+      method="get"
+      onSubmit={submit}
+      aria-label="Search resources"
+      className="mx-auto flex w-full max-w-2xl items-center"
+    >
+      {[...searchParams.entries()]
+        .filter(([key]) => key !== "q" && key !== "page")
+        .map(([key, value]) => (
+          <input
+            key={`${key}-${value}`}
+            type="hidden"
+            name={key}
+            value={value}
+          />
+        ))}
       <Input
-        type="text"
-        placeholder="Search any products you need"
+        key={query}
+        name="q"
+        type="search"
+        aria-label="Search resources"
+        placeholder="Search tools and resources"
+        defaultValue={query}
+        maxLength={200}
         autoComplete="off"
-        value={searchQuery}
-        onChange={handleSearch}
-        className={cn(
-          "w-[320px] sm:w-[480px] md:w-[640px] h-12 rounded-r-none",
-          "focus-visible:ring-0 focus-visible:ring-offset-0 focus:border-primary focus:border-2 focus:border-r-0",
-        )}
+        className="h-12 min-w-0 flex-1 rounded-r-none text-base"
       />
-      <Button type="submit" className="rounded-l-none size-12">
-        <SearchIcon className="size-6" aria-hidden="true" />
+      <Button type="submit" className="size-12 shrink-0 rounded-l-none">
+        <SearchIcon className="size-5" aria-hidden="true" />
         <span className="sr-only">Search</span>
       </Button>
-    </div>
+    </form>
   );
 }

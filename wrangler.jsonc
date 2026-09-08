@@ -1,0 +1,17 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "mkdirs",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2026-09-08",
+  "compatibility_flags": ["nodejs_compat"],
+  "workers_dev": true,
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+  "vars": {
+    "NEXT_PUBLIC_APP_URL": "https://mkdirs.yantao006.workers.dev",
+    "NEXT_PUBLIC_SANITY_PROJECT_ID": "it1vepjy",
+    "NEXT_PUBLIC_SANITY_DATASET": "production"
+  }
+}

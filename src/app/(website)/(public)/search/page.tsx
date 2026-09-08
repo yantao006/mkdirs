@@ -8,6 +8,7 @@ import {
   ITEMS_PER_PAGE,
   SORT_FILTER_LIST,
 } from "@/lib/constants";
+import { normalizePage, normalizeSearchParams } from "@/lib/directory-query";
 import { constructMetadata } from "@/lib/metadata";
 import type { SponsorItemListQueryResult } from "@/sanity.types";
 import { sanityFetch } from "@/sanity/lib/fetch";
@@ -20,10 +21,12 @@ export const metadata = constructMetadata({
 });
 
 export default async function SearchPage({
-  searchParams,
+  searchParams: searchParamsPromise,
 }: {
-  searchParams?: { [key: string]: string | string[] | undefined };
+  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
+  const searchParams = normalizeSearchParams(await searchParamsPromise);
+
   console.log("SearchPage, searchParams", searchParams);
 
   const sponsorItems =
@@ -44,7 +47,7 @@ export default async function SearchPage({
   } = searchParams as { [key: string]: string };
   const { sortKey, reverse } =
     SORT_FILTER_LIST.find((item) => item.slug === sort) || DEFAULT_SORT;
-  const currentPage = page ? Number(page) : 1;
+  const currentPage = normalizePage(page);
   const { items, totalCount } = await getItems({
     category,
     tag,

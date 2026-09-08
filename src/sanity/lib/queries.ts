@@ -44,10 +44,10 @@ export const itemSimpleFields = /* groq */ `
   description,
   link,
   affiliateLink,
-  sponsor,
+  "sponsor": false,
   sponsorStartDate,
   sponsorEndDate,
-  note,
+  "note": null,
   featured,
   icon {
     ...,
@@ -61,13 +61,13 @@ export const itemSimpleFields = /* groq */ `
   },
   publishDate,
   paid,
-  order,
+  "order": null,
   pricePlan,
   freePlanStatus,
   proPlanStatus,
   sponsorPlanStatus,
-  rejectionReason,
-  submitter->,
+  "rejectionReason": null,
+  submitter->{_id, name, image, link},
   collections[]->,
   categories[]->,
   tags[]->,
@@ -82,11 +82,11 @@ const itemFields = /* groq */ `
 const itemFieldsWithRelated = /* groq */ `
   introduction,
   "related": *[_type == "item" && defined(slug.current) 
-    && defined(publishDate) 
+    && defined(publishDate) && publishDate <= now()
     && forceHidden != true
     && sponsor != true
     && count(categories[@._ref in ^.^.categories[]._ref]) > 0 && _id != ^._id] 
-    | order(publishedDate desc, _createdAt desc) [0...3] {
+    | order(publishDate desc, _id asc) [0...3] {
       ${itemSimpleFields}
   },
   ${itemSimpleFields}
@@ -96,7 +96,7 @@ export const itemByIdQuery = defineQuery(`*[_type == "item" && _id == $id][0] {
   ${itemSimpleFields}
 }`);
 
-export const itemInfoBySlugQuery = defineQuery(`*[_type == "item" && slug.current == $slug][0] {
+export const itemInfoBySlugQuery = defineQuery(`*[_type == "item" && slug.current == $slug && defined(publishDate) && publishDate <= now() && forceHidden != true][0] {
   ${itemSimpleFields}
 }`);
 
@@ -104,8 +104,8 @@ export const itemFullInfoByIdQuery = defineQuery(`*[_type == "item" && _id == $i
   ${itemFields}
 }`);
 
-export const itemFullInfoBySlugQuery = defineQuery(`*[_type == "item" && slug.current == $slug 
-&& forceHidden != true] [0] {
+export const itemFullInfoBySlugQuery = defineQuery(`*[_type == "item" && slug.current == $slug
+&& defined(publishDate) && publishDate <= now() && forceHidden != true] [0] {
   ${itemFieldsWithRelated}
 }`);
 
@@ -123,7 +123,7 @@ export const itemListQuery = defineQuery(`*[_type == "item" && defined(slug.curr
 }`);
 
 // get sponsor items
-export const sponsorItemListQuery = defineQuery(`*[_type == "item" && defined(slug.current) 
+export const sponsorItemListQuery = defineQuery(`*[_type == "item" && false && defined(slug.current) 
   && defined(publishDate)
   && forceHidden != true
   && sponsor == true

@@ -108,8 +108,8 @@ export function HomeSearchFilterClient({
   }));
 
   return (
-    <div className="grid md:grid-cols-[1fr_1fr_1fr_0.5fr] gap-4 z-10 items-center">
-      <div className="flex md:hidden">
+    <div className="grid sm:grid-cols-2 xl:grid-cols-[1fr_1fr_1fr_0.5fr] gap-4 z-10 items-center">
+      <div className="flex lg:hidden">
         <ResponsiveComboBox
           filterItemList={categoryFilterItemList}
           placeholder="All Categories"

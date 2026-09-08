@@ -1,0 +1,38 @@
+name: Directory checks
+
+on:
+  pull_request:
+  push:
+    branches: [main, fm/mkdirs-cloudflare-launch-v1]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: directory-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      NEXT_PUBLIC_APP_URL: https://mkdirs.yantao006.workers.dev
+      NEXT_PUBLIC_SANITY_PROJECT_ID: it1vepjy
+      NEXT_PUBLIC_SANITY_DATASET: production
+      NEXT_TELEMETRY_DISABLED: "1"
+      SANITY_CLI_TELEMETRY_DISABLED: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9.14.3
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm lint:check
+      - run: pnpm test
+      - run: pnpm typecheck
+      - run: pnpm build:cloudflare

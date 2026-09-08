@@ -3,39 +3,29 @@ import type { FooterConfig } from "@/types";
 export const footerConfig: FooterConfig = {
   links: [
     {
-      title: "Product",
+      title: "Explore",
       items: [
+        { title: "All resources", href: "/" },
         { title: "Search", href: "/search" },
-        { title: "Collection", href: "/collection" },
-        { title: "Category", href: "/category" },
-        { title: "Tag", href: "/tag" },
+        { title: "Collections", href: "/collection" },
       ],
     },
     {
-      title: "Resources",
+      title: "Browse",
       items: [
-        { title: "Blog", href: "/blog" },
-        { title: "Pricing", href: "/pricing" },
-        { title: "Submit", href: "/submit" },
-        { title: "Studio", href: "/studio", external: true },
+        { title: "Categories", href: "/category" },
+        { title: "Tags", href: "/tag" },
       ],
     },
     {
-      title: "Pages",
+      title: "Project",
       items: [
-        { title: "Home 2", href: "/home2" },
-        { title: "Home 3", href: "/home3" },
-        { title: "Collection 1", href: "/collection/the-best-google-analytics-alternatives-in-2024" },
-        { title: "Collection 2", href: "/collection/the-best-alternatives-to-semrush-in-2024" },
-      ],
-    },
-    {
-      title: "Company",
-      items: [
-        { title: "About Us", href: "/about" },
-        { title: "Privacy Policy", href: "/privacy" },
-        { title: "Terms of Service", href: "/terms" },
-        { title: "Sitemap", href: "/sitemap.xml" },
+        {
+          title: "Source & updates",
+          href: "https://github.com/yantao006/mkdirs",
+          external: true,
+        },
+        { title: "Content editor", href: "/studio" },
       ],
     },
   ],

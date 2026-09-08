@@ -8,10 +8,8 @@ import {
   ITEMS_PER_PAGE,
   SORT_FILTER_LIST,
 } from "@/lib/constants";
+import { normalizePage, normalizeSearchParams } from "@/lib/directory-query";
 import { constructMetadata } from "@/lib/metadata";
-import type { SponsorItemListQueryResult } from "@/sanity.types";
-import { sanityFetch } from "@/sanity/lib/fetch";
-import { sponsorItemListQuery } from "@/sanity/lib/queries";
 
 export const metadata = constructMetadata({
   title: "",
@@ -21,18 +19,8 @@ export const metadata = constructMetadata({
 export default async function HomePage({
   searchParams,
 }: {
-  searchParams?: { [key: string]: string | string[] | undefined };
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
-  console.log("HomePage, searchParams", searchParams);
-
-  const sponsorItems =
-    (await sanityFetch<SponsorItemListQueryResult>({
-      query: sponsorItemListQuery,
-    })) || [];
-  // console.log("HomePage, sponsorItems", sponsorItems);
-  const showSponsor = true;
-  const hasSponsorItem = showSponsor && sponsorItems.length > 0;
-
   const {
     category,
     tag,
@@ -40,10 +28,9 @@ export default async function HomePage({
     page,
     q: query,
     f: filter,
-  } = searchParams as { [key: string]: string };
+  } = normalizeSearchParams(await searchParams);
   const { sortKey, reverse } =
     SORT_FILTER_LIST.find((item) => item.slug === sort) || DEFAULT_SORT;
-  const currentPage = page ? Number(page) : 1;
   const { items, totalCount } = await getItems({
     category,
     tag,
@@ -51,28 +38,23 @@ export default async function HomePage({
     reverse,
     query,
     filter,
-    currentPage,
-    hasSponsorItem,
+    currentPage: normalizePage(page),
   });
-  const totalPages = Math.ceil(totalCount / ITEMS_PER_PAGE);
-  console.log("HomePage, totalCount", totalCount, ", totalPages", totalPages);
-
   return (
     <div>
-      {/* when no items are found */}
-      {items?.length === 0 && <EmptyGrid />}
-
-      {/* when items are found */}
-      {items && items.length > 0 && (
-        <section className="">
-          <ItemGrid
-            items={items}
-            sponsorItems={sponsorItems}
-            showSponsor={showSponsor}
-          />
-
-          <div className="mt-8 flex items-center justify-center">
-            <CustomPagination routePrefix="/" totalPages={totalPages} />
+      <output className="mb-4 block text-sm text-muted-foreground">
+        {totalCount} resources found
+      </output>
+      {items.length === 0 ? (
+        <EmptyGrid />
+      ) : (
+        <section aria-label="Directory resources">
+          <ItemGrid items={items} sponsorItems={[]} showSponsor={false} />
+          <div className="mt-8 flex justify-center">
+            <CustomPagination
+              routePrefix="/"
+              totalPages={Math.ceil(totalCount / ITEMS_PER_PAGE)}
+            />
           </div>
         </section>
       )}

@@ -10,6 +10,7 @@ import {
   ITEMS_PER_PAGE,
   SORT_FILTER_LIST,
 } from "@/lib/constants";
+import { normalizePage, normalizeSearchParams } from "@/lib/directory-query";
 import { constructMetadata } from "@/lib/metadata";
 import type {
   CollectionQueryResult,
@@ -21,10 +22,12 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 export async function generateMetadata({
-  params,
+  params: paramsPromise,
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }): Promise<Metadata | undefined> {
+  const params = await paramsPromise;
+
   const collection = await sanityFetch<CollectionQueryResult>({
     query: collectionQuery,
     params: { slug: params.slug },
@@ -50,12 +53,15 @@ export async function generateMetadata({
 }
 
 export default async function CollectionPage({
-  params,
-  searchParams,
+  params: paramsPromise,
+  searchParams: searchParamsPromise,
 }: {
-  params: { slug: string };
-  searchParams?: { [key: string]: string | string[] | undefined };
+  params: Promise<{ slug: string }>;
+  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
+  const params = await paramsPromise;
+  const searchParams = normalizeSearchParams(await searchParamsPromise);
+
   const collection = await sanityFetch<CollectionQueryResult>({
     query: collectionQuery,
     params: { slug: params.slug },
@@ -78,7 +84,7 @@ export default async function CollectionPage({
   const { sort, page } = searchParams as { [key: string]: string };
   const { sortKey, reverse } =
     SORT_FILTER_LIST.find((item) => item.slug === sort) || DEFAULT_SORT;
-  const currentPage = page ? Number(page) : 1;
+  const currentPage = normalizePage(page);
   const { items, totalCount } = await getItems({
     collection: params.slug,
     sortKey,

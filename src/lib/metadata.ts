@@ -17,7 +17,10 @@ export function constructMetadata({
   image?: string;
   noIndex?: boolean;
 } = {}): Metadata {
-  const fullTitle = title ? `${title} - ${siteConfig.name}` : siteConfig.name;
+  const fullTitle =
+    title && title !== siteConfig.name
+      ? `${title} - ${siteConfig.name}`
+      : siteConfig.name;
   return {
     title: fullTitle,
     description,
@@ -36,7 +39,7 @@ export function constructMetadata({
     openGraph: {
       type: "website",
       locale: "en_US",
-      url: siteConfig.url,
+      url: canonicalUrl || siteConfig.url,
       title: fullTitle,
       description,
       siteName: siteConfig.name,
@@ -47,8 +50,6 @@ export function constructMetadata({
       title: fullTitle,
       description,
       images: [image],
-      site: siteConfig.url,
-      creator: siteConfig.author,
     },
     icons: {
       icon: "/favicon.ico",
