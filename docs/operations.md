@@ -84,7 +84,7 @@ pnpm test
 pnpm typecheck
 pnpm build:cloudflare
 pnpm exec wrangler deploy --dry-run --outdir artifacts/worker-bundle
-pnpm deploy
+pnpm run deploy
 ```
 
 Do not use automatic framework migration commands that create caching resources as a side effect.

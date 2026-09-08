@@ -18,7 +18,7 @@ Use the actual variable names in those files, not variable names from other Next
 - Type check: `pnpm typecheck`.
 - Regression tests: `pnpm test`.
 - Cloudflare build: `pnpm build:cloudflare`.
-- Deploy this product's existing Worker: `pnpm deploy`, after confirming the account and resource.
+- Deploy this product's existing Worker: `pnpm run deploy`, after confirming the account and resource.
 - Schema/query types: `pnpm typegen`; never manually edit `sanity.types.ts` or `schema.json`.
 - Starter content validation/import: `pnpm content:import`; see operations for the explicit write gate.
 
