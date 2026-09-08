@@ -123,7 +123,7 @@ export const itemListQuery = defineQuery(`*[_type == "item" && defined(slug.curr
 }`);
 
 // get sponsor items
-export const sponsorItemListQuery = defineQuery(`*[_type == "item" && false && defined(slug.current) 
+export const sponsorItemListQuery = defineQuery(`*[_type == "item" && false && defined(slug.current)
   && defined(publishDate)
   && forceHidden != true
   && sponsor == true
