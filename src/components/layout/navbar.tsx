@@ -15,7 +15,7 @@ import type { DashboardConfig, MarketingConfig } from "@/types";
 import { MenuIcon } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ModeToggle } from "./mode-toggle";
 
 export function Navbar({
@@ -23,6 +23,9 @@ export function Navbar({
 }: { scroll?: boolean; config: DashboardConfig | MarketingConfig }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  useEffect(() => {
+    if (pathname) setOpen(false);
+  }, [pathname]);
   const active = (href: string) =>
     href === "/" ? pathname === "/" : pathname.startsWith(href);
   return (
@@ -73,7 +76,9 @@ export function Navbar({
                   <Link
                     key={item.href}
                     href={item.href}
-                    onClick={() => setOpen(false)}
+                    onClick={() => {
+                      if (pathname === item.href) setOpen(false);
+                    }}
                     aria-current={active(item.href) ? "page" : undefined}
                     className={cn(
                       "rounded-md p-3 hover:bg-muted",
