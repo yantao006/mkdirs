@@ -32,12 +32,7 @@ export async function generateMetadata({
     query: collectionQuery,
     params: { slug: params.slug },
   });
-  if (!collection) {
-    console.warn(
-      `generateMetadata, collection not found for slug: ${params.slug}`,
-    );
-    return;
-  }
+  if (!collection) notFound();
 
   const ogImageUrl = new URL(`${siteConfig.url}/api/og`);
   ogImageUrl.searchParams.append("title", collection.name);

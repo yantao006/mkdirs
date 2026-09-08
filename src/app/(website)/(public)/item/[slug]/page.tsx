@@ -38,10 +38,7 @@ export async function generateMetadata({
     query: itemInfoBySlugQuery,
     params: { slug: params.slug },
   });
-  if (!item) {
-    console.warn(`generateMetadata, item not found for slug: ${params.slug}`);
-    return;
-  }
+  if (!item || !safeExternalUrl(item.link)) notFound();
 
   const imageProps = item?.image ? urlForImage(item?.image) : null;
   return constructMetadata({

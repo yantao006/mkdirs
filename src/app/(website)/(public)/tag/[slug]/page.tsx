@@ -30,10 +30,7 @@ export async function generateMetadata({
     query: tagQuery,
     params: { slug: params.slug },
   });
-  if (!tag) {
-    console.warn(`generateMetadata, tag not found for slug: ${params.slug}`);
-    return;
-  }
+  if (!tag) notFound();
 
   const ogImageUrl = new URL(`${siteConfig.url}/api/og`);
   ogImageUrl.searchParams.append("title", tag.name);

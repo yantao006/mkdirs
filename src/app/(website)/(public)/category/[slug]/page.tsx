@@ -30,12 +30,7 @@ export async function generateMetadata({
     query: categoryQuery,
     params: { slug: params.slug },
   });
-  if (!category) {
-    console.warn(
-      `generateMetadata, category not found for slug: ${params.slug}`,
-    );
-    return;
-  }
+  if (!category) notFound();
 
   const ogImageUrl = new URL(`${siteConfig.url}/api/og`);
   ogImageUrl.searchParams.append("title", category.name);

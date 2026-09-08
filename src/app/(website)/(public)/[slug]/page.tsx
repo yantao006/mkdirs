@@ -18,10 +18,7 @@ export async function generateMetadata({
     query: pageQuery,
     params: { slug: params.slug },
   });
-  if (!page) {
-    console.warn(`generateMetadata, page not found for slug: ${params.slug}`);
-    return;
-  }
+  if (!page) notFound();
 
   return constructMetadata({
     title: page.title,
