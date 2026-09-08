@@ -1,24 +1,9 @@
-import { SHOW_QUERY_LOGS } from "@/lib/constants";
-import { type Order, User } from "@/sanity.types";
-import { sanityFetch } from "@/sanity/lib/fetch";
+import type { Order } from "@/sanity.types";
+import { privateFetch } from "@/sanity/lib/private-client";
 
-export const getOrderByUserIdAndItemId = async (
-  userId: string,
-  itemId: string,
-) => {
-  try {
-    // @sanity-typegen-ignore
-    const orderQry = `*[_type == "order" && user._ref == "${userId}" && item._ref == "${itemId}"][0]`;
-    const order = await sanityFetch<Order>({
-      query: orderQry,
-      disableCache: true,
-    });
-    if (SHOW_QUERY_LOGS) {
-      console.log("getOrderByUserIdAndItemId, order:", order);
-    }
-    return order;
-  } catch (error) {
-    console.error("getOrderByUserIdAndItemId, error:", error);
-    return null;
-  }
-};
+export const getOrderByUserIdAndItemId = (userId: string, itemId: string) =>
+  privateFetch<Order | null>({
+    query:
+      '*[_type == "order" && _id in path("mkdirsPrivate.order.*") && user._ref == $userId && item._ref == $itemId][0]',
+    params: { userId, itemId },
+  });

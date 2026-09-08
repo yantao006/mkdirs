@@ -1,3 +1,5 @@
+import "server-only";
+
 import { ApprovalEmail } from "@/emails/approval-email";
 import { NotifySubmissionEmail } from "@/emails/notify-submission-to-admin";
 import { NotifySubmissionToUserEmail } from "@/emails/notify-submission-to-user";
@@ -5,111 +7,98 @@ import { PaymentSuccessEmail } from "@/emails/payment-success";
 import RejectionEmail from "@/emails/rejection-email";
 import { ResetPasswordEmail } from "@/emails/reset-password";
 import VerifyEmail from "@/emails/verify-email";
+import { requireService } from "@/lib/service-config";
+import type { ReactNode } from "react";
 import { Resend } from "resend";
 
-export const resend = new Resend(process.env.RESEND_API_KEY);
+export function getResend() {
+  requireService("email");
+  return new Resend(process.env.RESEND_API_KEY);
+}
 
-const SITE_URL = process.env.NEXT_PUBLIC_APP_URL;
+async function sendMail(to: string, subject: string, react: ReactNode) {
+  const result = await getResend().emails.send({
+    from: process.env.RESEND_EMAIL_FROM,
+    to,
+    subject,
+    react,
+  });
+  if (result.error || !result.data?.id) {
+    throw new Error("The email provider could not accept the message");
+  }
+  return result.data;
+}
 
-export const sendPasswordResetEmail = async (
+export function sendPasswordResetEmail(
   userName: string,
   email: string,
   token: string,
-) => {
-  const resetLink = `${SITE_URL}/auth/new-password?token=${token}`;
+) {
+  const resetLink = `${process.env.NEXT_PUBLIC_APP_URL}/auth/new-password?token=${encodeURIComponent(token)}`;
+  return sendMail(
+    email,
+    "Reset your password",
+    ResetPasswordEmail({ userName, resetLink }),
+  );
+}
 
-  await resend.emails.send({
-    from: process.env.RESEND_EMAIL_FROM,
-    to: email,
-    subject: "Reset your password",
-    react: ResetPasswordEmail({ userName, resetLink: resetLink }),
-  });
-};
+export function sendVerificationEmail(email: string, token: string) {
+  const confirmLink = `${process.env.NEXT_PUBLIC_APP_URL}/auth/new-verification?token=${encodeURIComponent(token)}`;
+  return sendMail(email, "Confirm your email", VerifyEmail({ confirmLink }));
+}
 
-export const sendVerificationEmail = async (email: string, token: string) => {
-  const confirmLink = `${SITE_URL}/auth/new-verification?token=${token}`;
-
-  await resend.emails.send({
-    from: process.env.RESEND_EMAIL_FROM,
-    to: email,
-    subject: "Confirm your email",
-    react: VerifyEmail({ confirmLink }),
-  });
-};
-
-export const sendNotifySubmissionEmail = async (
+export async function sendNotifySubmissionEmail(
   userName: string,
   userEmail: string,
   itemName: string,
   statusLink: string,
   reviewLink: string,
-) => {
-  // console.log(`sendNotifySubmissionEmail,
-  //   userName: ${userName},
-  //   userEmail: ${userEmail},
-  //   itemName: ${itemName},
-  //   reviewLink: ${reviewLink},
-  //   statusLink: ${statusLink}`);
+) {
+  requireService("submissionNotifications");
+  await sendMail(
+    userEmail,
+    "Thank you for your submission",
+    NotifySubmissionToUserEmail({ userName, itemName, statusLink }),
+  );
+  await sendMail(
+    process.env.RESEND_EMAIL_ADMIN,
+    "New submission",
+    NotifySubmissionEmail({ itemName, reviewLink }),
+  );
+}
 
-  await resend.emails.send({
-    from: process.env.RESEND_EMAIL_FROM,
-    to: userEmail,
-    subject: "Thank you for your submission",
-    react: NotifySubmissionToUserEmail({
-      userName,
-      itemName,
-      statusLink,
-    }),
-  });
-
-  await resend.emails.send({
-    from: process.env.RESEND_EMAIL_FROM,
-    to: process.env.RESEND_EMAIL_ADMIN,
-    subject: "New submission",
-    react: NotifySubmissionEmail({ itemName, reviewLink }),
-  });
-};
-
-export const sendPaymentSuccessEmail = async (
+export function sendPaymentSuccessEmail(
   userName: string,
   email: string,
   itemLink: string,
-) => {
-  // console.log(`sendPaymentSuccessEmail,
-  //   email: ${email},
-  //   userName: ${userName},
-  //   itemLink: ${itemLink}`);
+) {
+  return sendMail(
+    email,
+    "Your submission payment was received",
+    PaymentSuccessEmail({ userName, itemLink }),
+  );
+}
 
-  await resend.emails.send({
-    from: process.env.RESEND_EMAIL_FROM,
-    to: email,
-    subject: "Thank your for your submission",
-    react: PaymentSuccessEmail({ userName, itemLink }),
-  });
-};
-
-export const sendApprovalEmail = async (
+export function sendApprovalEmail(
   userName: string,
   email: string,
   itemLink: string,
-) => {
-  await resend.emails.send({
-    from: process.env.RESEND_EMAIL_FROM,
-    to: email,
-    subject: "Your submission has been approved",
-    react: ApprovalEmail({ userName, itemLink }),
-  });
-};
+) {
+  return sendMail(
+    email,
+    "Your submission has been approved",
+    ApprovalEmail({ userName, itemLink }),
+  );
+}
 
-export const sendRejectionEmail = async (
+export function sendRejectionEmail(
   userName: string,
   email: string,
   dashboardLink: string,
-) => {
-  await resend.emails.send({
-    from: process.env.RESEND_EMAIL_FROM,
-    to: email,
-    subject: "Please check your submission",
-    react: RejectionEmail({ userName, dashboardLink }),
-  });
-};
+) {
+  return sendMail(
+    email,
+    "Please check your submission",
+    RejectionEmail({ userName, dashboardLink }),
+  );
+}

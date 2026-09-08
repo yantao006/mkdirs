@@ -53,8 +53,8 @@ export default function SettingsForm() {
   }, [user, form]);
 
   const onSubmit = (values: z.infer<typeof SettingsSchema>) => {
-    startTransition(() => {
-      settings(values)
+    startTransition(async () => {
+      await settings(values)
         .then((data) => {
           if (data.status === "error") {
             console.log("SettingsForm, error:", data.message);

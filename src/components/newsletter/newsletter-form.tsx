@@ -32,7 +32,7 @@ export function NewsletterForm() {
 
   function onSubmit(data: NewsletterFormData) {
     startTransition(async () => {
-      subscribeToNewsletter({ email: data.email })
+      await subscribeToNewsletter({ email: data.email })
         .then((data) => {
           switch (data.status) {
             case "success":

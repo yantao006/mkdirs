@@ -37,8 +37,8 @@ export const ResetForm = () => {
     setError("");
     setSuccess("");
 
-    startTransition(() => {
-      reset(values)
+    startTransition(async () => {
+      await reset(values)
         .then((data) => {
           if (data.status === "error") {
             console.log("reset, error:", data.message);

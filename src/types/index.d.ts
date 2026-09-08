@@ -93,7 +93,8 @@ export type PricePlan = {
   description: string;
   benefits: string[];
   limitations: string[];
-  price: number;
+  price: number | null;
+  currency?: string;
   priceSuffix: string;
   stripePriceId: string | null;
 };

@@ -35,7 +35,7 @@ export function SponsorPlanButton({
 
   const handleCreateCheckoutSession = () => {
     startTransition(async () => {
-      createCheckoutSession(
+      await createCheckoutSession(
         item._id,
         pricePlan.stripePriceId,
         PricePlans.SPONSOR,

@@ -47,7 +47,7 @@ export const ResetPasswordEmail = ({
         <Container style={container}>
           <Section style={box}>
             <Img
-              src={`${baseUrl}/logo.png`}
+              src={`${baseUrl}/favicon-32x32.png`}
               width="32"
               height="32"
               alt="Logo"
@@ -85,10 +85,6 @@ export const ResetPasswordEmail = ({
                 &nbsp;&nbsp; All Rights Reserved.
               </span>
               <span style={footerRight}>
-                <Link style={anchor} href={siteConfig.links.twitter}>
-                  Twitter
-                </Link>
-                &nbsp;&nbsp;&nbsp;&nbsp;
                 <Link style={anchor} href={siteConfig.links.github}>
                   GitHub
                 </Link>
@@ -102,8 +98,8 @@ export const ResetPasswordEmail = ({
 };
 
 ResetPasswordEmail.PreviewProps = {
-  userName: "Javayhu",
-  resetLink: "https://demo.mkdirs.com",
+  userName: "Example member",
+  resetLink: "https://example.invalid/auth/new-password",
 } as ResetPasswordEmailProps;
 
 export default ResetPasswordEmail;

@@ -1,6 +1,7 @@
 import { getPasswordResetTokenByEmail } from "@/data/password-reset-token";
 import { getVerificationTokenByEmail } from "@/data/verification-token";
-import { sanityClient } from "@/sanity/lib/client";
+import { privateDocumentId } from "@/lib/private-documents";
+import { sanityClient } from "@/sanity/lib/private-client";
 import { uuid } from "@sanity/uuid";
 
 export const generateVerificationToken = async (email: string) => {
@@ -15,8 +16,9 @@ export const generateVerificationToken = async (email: string) => {
   }
 
   const verificationToken = await sanityClient.create({
+    _id: privateDocumentId("verificationToken"),
     _type: "verificationToken",
-    identifier: email,
+    identifier: email.trim().toLowerCase(),
     token,
     expires,
   });
@@ -36,8 +38,9 @@ export const generatePasswordResetToken = async (email: string) => {
   }
 
   const passwordResetToken = await sanityClient.create({
+    _id: privateDocumentId("passwordResetToken"),
     _type: "passwordResetToken",
-    identifier: email,
+    identifier: email.trim().toLowerCase(),
     token,
     expires,
   });

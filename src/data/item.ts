@@ -2,19 +2,20 @@ import { ITEMS_PER_PAGE } from "@/lib/constants";
 import { buildDirectoryQuery } from "@/lib/directory-query";
 import type { Item, ItemListQueryResult } from "@/sanity.types";
 import { sanityFetch } from "@/sanity/lib/fetch";
-import { itemSimpleFields } from "@/sanity/lib/queries";
+import { privateFetch } from "@/sanity/lib/private-client";
+import { itemByIdQuery, itemSimpleFields } from "@/sanity/lib/queries";
 import type { ItemInfo } from "@/types";
 
 export async function getItemById(id: string) {
-  return sanityFetch<Item>({
+  return privateFetch<Item>({
     query: '*[_type == "item" && _id == $id][0]',
     params: { id },
   });
 }
 
 export async function getItemInfoById(id: string) {
-  return sanityFetch<ItemInfo>({
-    query: `*[_type == "item" && _id == $id][0] { ${itemSimpleFields} }`,
+  return privateFetch<ItemInfo>({
+    query: itemByIdQuery,
     params: { id },
   });
 }

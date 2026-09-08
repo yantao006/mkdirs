@@ -31,12 +31,12 @@ export const NewsletterWelcomeEmail = ({ email }: { email: string }) => {
   return (
     <Html>
       <Head />
-      <Preview>Welcome to Mkdirs!</Preview>
+      <Preview>Welcome to mkdirs!</Preview>
       <Body style={main}>
         <Container style={container}>
           <Section style={box}>
             <Img
-              src={`${baseUrl}/logo.png`}
+              src={`${baseUrl}/favicon-32x32.png`}
               width="32"
               height="32"
               alt="Logo"
@@ -66,10 +66,6 @@ export const NewsletterWelcomeEmail = ({ email }: { email: string }) => {
               </span>
 
               <span style={footerRight}>
-                <Link style={anchor} href={siteConfig.links.twitter}>
-                  Twitter
-                </Link>
-                &nbsp;&nbsp;&nbsp;&nbsp;
                 <Link style={anchor} href={siteConfig.links.github}>
                   GitHub
                 </Link>
@@ -94,5 +90,5 @@ export const NewsletterWelcomeEmail = ({ email }: { email: string }) => {
 export default NewsletterWelcomeEmail;
 
 NewsletterWelcomeEmail.PreviewProps = {
-  email: "support@mkdirs.com",
+  email: "member@example.invalid",
 };

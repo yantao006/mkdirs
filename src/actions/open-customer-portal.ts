@@ -1,9 +1,9 @@
 "use server";
 
-import type { currentUser } from "@/lib/auth";
-import type { stripe } from "@/lib/stripe";
-import type { absoluteUrl } from "@/lib/utils";
-import type { redirect } from "next/navigation";
+import { currentUser } from "@/lib/auth";
+import { getStripe } from "@/lib/stripe";
+import { absoluteUrl } from "@/lib/utils";
+import { redirect } from "next/navigation";
 
 export type ServerActionResponse = {
   status: "success" | "error";
@@ -11,13 +11,34 @@ export type ServerActionResponse = {
   stripeUrl?: string;
 };
 
+const billingUrl = absoluteUrl("/dashboard");
+
 /**
  * NOTICE: not used in the app yet
  */
 export async function openCustomerPortal(
   stripeCustomerId: string,
 ): Promise<ServerActionResponse> {
-  throw new Error(
-    "This directory is read-only. Template service actions are disabled.",
-  );
+  let redirectUrl = "";
+
+  try {
+    const user = await currentUser();
+    if (!user || !user.email) {
+      return { status: "error", message: "Unauthorized" };
+    }
+
+    if (stripeCustomerId) {
+      const stripeSession = await getStripe().billingPortal.sessions.create({
+        customer: stripeCustomerId,
+        return_url: billingUrl,
+      });
+
+      redirectUrl = stripeSession.url as string;
+    }
+  } catch (error) {
+    return { status: "error", message: "Failed to open customer portal" };
+  }
+
+  redirect(redirectUrl);
+  // return { status: "success", stripeUrl: redirectUrl };
 }

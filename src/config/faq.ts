@@ -1,39 +1,36 @@
 import type { FAQConfig } from "@/types";
-import { siteConfig } from "./site";
 
 export const faqConfig: FAQConfig = {
   items: [
     {
-      id: "item-1",
-      question: "Is it free to submit my product?",
+      id: "1",
+      question: "How do I submit a resource?",
       answer:
-        "Yes, it is. \nYou can submit your product for free to get 3 dofollow links to boost your SEO. \nHowever, the free plan has limitations:\n" +
-        "- Reviewed and listed within 72 hours\n" +
-        "- Requires a backlink to our site\n" +
-        "- No customer support",
+        "Create an account, verify your email, and use the Submit page. Add the website details, images, categories, and tags, then choose a submission plan.",
     },
     {
-      id: "item-2",
-      question: "What are the benefits of the Pro plan?",
+      id: "2",
+      question: "When can a free submission be published?",
       answer:
-        "The Pro plan offers several benefits:\n" +
-        "- At least 3 dofollow links\n" +
-        "- Immediate listing, or publish it whenever you want\n" +
-        "- Permanent links with no backlink requirement\n" +
-        "- Featured in listings with an award icon\n" +
-        "- Promotion through our social media and newsletters\n" +
-        "- Premium customer support",
+        "Free submissions must be sent for review and approved before the submitter can publish them. The dashboard shows the current review state. No fixed review deadline is promised.",
     },
     {
-      id: "item-3",
-      question: "The differences between Free and Pro plans?",
+      id: "3",
+      question: "How do paid submissions work?",
       answer:
-        "Free plan submissions are reviewed and listed within 72 hours, a backlink to our site is required. \nWhile Pro plan submissions are included immediately, no backlink is required. \nBoth plans can be launched whenever you want and update product information anytime.",
+        "Pro and Sponsor submissions use Stripe checkout. A resource can be published after successful payment has been verified by the server. Prices appear only when this site's payment configuration is ready.",
     },
     {
-      id: "item-4",
-      question: "Do I need to provide a backlink for my listing?",
-      answer: `For the Free plan, a backlink to our site is required. \nThe backlink is <a href='${siteConfig.url}' class='underline text-primary' title='${siteConfig.name}'>${siteConfig.url}</a>. \nHowever, if you choose the Pro plan, you get a permanent link without any backlink requirement.`,
+      id: "4",
+      question: "Can I update or unpublish my resource?",
+      answer:
+        "Your dashboard provides the original editing and publication controls for resources you own. Unpublished and hidden resources are excluded from public listings.",
+    },
+    {
+      id: "5",
+      question: "Is AI-assisted submission available?",
+      answer:
+        "The submission form includes AI assistance to draft website details. It requires a configured AI provider and your sign-in. You can review and edit the generated fields before submitting, or enter everything manually.",
     },
   ],
 };

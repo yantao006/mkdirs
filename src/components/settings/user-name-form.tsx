@@ -34,8 +34,8 @@ export function UserNameForm() {
 
   const onSubmit = form.handleSubmit((values) => {
     console.log("UserNameForm, values:", values);
-    startTransition(() => {
-      updateUserName(values)
+    startTransition(async () => {
+      await updateUserName(values)
         .then((data) => {
           if (data.status === "error") {
             console.log("UserNameForm, error:", data.message);

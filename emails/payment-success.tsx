@@ -47,7 +47,7 @@ export const PaymentSuccessEmail = ({
         <Container style={container}>
           <Section style={box}>
             <Img
-              src={`${baseUrl}/logo.png`}
+              src={`${baseUrl}/favicon-32x32.png`}
               width="32"
               height="32"
               alt="Logo"
@@ -66,11 +66,11 @@ export const PaymentSuccessEmail = ({
               to schedule when your product will be displayed.
             </Text>
             <Text style={paragraph}>
-              Your product has been successfully added to our directory. You can
-              view your listing by clicking the button below:
+              Your payment has been confirmed. Open your submission below to
+              choose when to publish it:
             </Text>
             <Button style={button} href={itemLink}>
-              View your product
+              Manage publication
             </Button>
             <Hr style={hr} />
             <Text style={paragraph}>
@@ -99,10 +99,6 @@ export const PaymentSuccessEmail = ({
                 &nbsp;&nbsp; All Rights Reserved.
               </span>
               <span style={footerRight}>
-                <Link style={anchor} href={siteConfig.links.twitter}>
-                  Twitter
-                </Link>
-                &nbsp;&nbsp;&nbsp;&nbsp;
                 <Link style={anchor} href={siteConfig.links.github}>
                   GitHub
                 </Link>
@@ -116,8 +112,8 @@ export const PaymentSuccessEmail = ({
 };
 
 PaymentSuccessEmail.PreviewProps = {
-  userName: "Javayhu",
-  itemLink: "https://demo.mkdirs.com",
+  userName: "Example member",
+  itemLink: "https://example.invalid/dashboard",
 } as PaymentSuccessEmailProps;
 
 export default PaymentSuccessEmail;

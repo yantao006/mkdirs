@@ -34,8 +34,8 @@ export function UserLinkForm() {
 
   const onSubmit = form.handleSubmit((values) => {
     console.log("UserLinkForm, values:", values);
-    startTransition(() => {
-      updateUserLink(values)
+    startTransition(async () => {
+      await updateUserLink(values)
         .then((data) => {
           if (data.status === "error") {
             console.log("UserLinkForm, error:", data.message);

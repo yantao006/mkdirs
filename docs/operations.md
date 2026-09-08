@@ -5,14 +5,17 @@
 The application configuration is in `wrangler.jsonc`, `open-next.config.ts`, and `.env.example`.
 The public entry point is https://mkdirs.yantao006.workers.dev .
 The dedicated Worker name is `mkdirs`.
-No custom domain, DNS change, paid plan upgrade, or external service account is required for the enabled feature set.
+The deployed directory required no custom domain or DNS change, and no billing plan has been modified.
+Validate the full-feature bundle and authenticated request CPU against the actual account limits before promoting it.
+The complete feature scope also needs the product-specific external integrations tracked in [features.md](features.md).
 
 | Variable | Source | Secret? |
 | --- | --- | --- |
 | `NEXT_PUBLIC_APP_URL` | The actual Worker HTTPS origin | No |
 | `NEXT_PUBLIC_SANITY_PROJECT_ID` | This product's Sanity project settings | No |
 | `NEXT_PUBLIC_SANITY_DATASET` | This product's public content dataset | No |
-| `SANITY_API_TOKEN` | Editor token for local import only | Yes; never deploy it |
+| `SANITY_API_TOKEN` | Product-scoped server-side identity/content operations and local import | Yes; Worker secret only, never client code |
+| `AUTH_SECRET` | Generate cryptographically for this product; Auth.js sessions and opaque identity IDs | Yes; Worker secret only |
 
 Public variables must agree between the Next.js build environment and Worker vars because Next.js can inline them into client bundles.
 For this deployment the Sanity project ID is `it1vepjy` and the dataset is `production`.
@@ -20,7 +23,7 @@ When adapting this repository for a different product, use a separate project an
 
 Sanity may automatically grant a $0 Growth Trial to a newly created project.
 The management page for this project states it will automatically return to Free after the trial ends.
-This site only relies on Free-compatible public content functionality, not private datasets, paid roles, AI, or trial-only features.
+Sanity storage relies only on Free-compatible root content and fixed private document-subpath rules, not paid private datasets, paid roles, Sanity AI, or trial-only features.
 Do not upgrade a billing plan to resolve an implementation problem without explicit approval.
 
 ## Updating resources in Studio
@@ -37,10 +40,11 @@ Use Force Hidden to remove an item from public listings and details without dele
 Unpublished documents, future publication dates, and hidden items are excluded from public details and the sitemap.
 Markdown is rendered as text markup, not executable JSX or MDX; arbitrary HTML is skipped.
 
-Studio authenticates directly against Sanity, so the Worker does not hold an editor token.
+Studio authenticates directly against Sanity without embedding the application's write token in its bundle.
+Application accounts and submissions use a separate server-only client with the product-scoped Worker secret.
 The project's CORS allow-list must include the exact production origin with credentials allowed for Studio.
 Do not add wildcard credentialed origins.
-The public application has no draft-preview endpoint.
+Draft-preview endpoints require validated Sanity preview authorization; anonymous public content queries must never gain draft access.
 
 ## Non-destructive starter import
 
@@ -67,8 +71,12 @@ Resource IDs use hyphens rather than dots because Sanity document paths containi
 The initial run corrected only its own newly created seed IDs to ordinary public document IDs and verified anonymous reads.
 
 The imported `pricePlan: free` field is an inherited template submission classification, not a claim that a listed tool is free.
-The website neither displays that classification as pricing nor enables payments.
-The default editor hides inherited payment and account fields.
+The public resource card does not display that classification as the listed tool's own price.
+Directory submission pricing is a separate Stripe-backed capability and requires approved product prices.
+The editor retains the original submission/payment review fields and private identity management.
+Sensitive document types cannot be created or duplicated as public root documents through Studio.
+Only the explicitly designated website administrator may send review emails through `/api/send-email`; being signed into Studio alone is not sufficient.
+Publish the final review state in Studio before using its notification action.
 
 ## Deploying
 
@@ -85,12 +93,19 @@ pnpm typecheck
 pnpm build:cloudflare
 pnpm exec wrangler deploy --dry-run --outdir artifacts/worker-bundle
 pnpm run deploy
+SMOKE_ORIGIN=https://mkdirs.yantao006.workers.dev node scripts/smoke-directory.mjs
 ```
 
 Do not use automatic framework migration commands that create caching resources as a side effect.
 The app deliberately reads published content on demand with a bounded upstream timeout and no persistent Next.js incremental-cache binding.
 A failed content request reaches a retryable error boundary rather than being disguised as an empty directory.
 No application dev server is needed for the launch verification; use the actual Worker URL.
+
+On networks requiring the existing system proxy, prefix the smoke command with `NODE_USE_ENV_PROXY=1` (Node 22.21+).
+The public layout renders on demand, and content detail routes have no early loading boundary, so missing content returns HTTP 404 rather than a streamed HTTP 200.
+`htmlLimitedBots` disables streaming metadata for every client so missing-content checks run before response headers.
+Wrangler `keep_names: false` is required because next-themes serializes an inline function; injected esbuild name helpers would otherwise reference a missing `__name` in the browser.
+Version preview URLs are disabled in the normal release configuration.
 
 Check current [Workers limits](https://developers.cloudflare.com/workers/platform/limits/) and actual account limits, including uncompressed bundle size, startup CPU, per-request CPU, and memory.
 Old OpenNext documentation's gzip limits are not an authoritative current platform limit.
@@ -107,14 +122,14 @@ pnpm exec wrangler rollback <previous-version-id> --name mkdirs
 Only select a known previous version of this dedicated Worker.
 A Worker rollback does not change Sanity content; restore or correct content separately in Studio.
 Keep source and public build variables together when rebuilding an older revision.
-The first release has no earlier production version to roll back to.
+Do not select the temporary upstream-failure probe version as a rollback target.
 
 ## Validation
 
-`pnpm test` covers parameter injection, malformed pagination, combined filters, page boundaries, hidden/unpublished/future items, public user-field projection, safe links, non-executable Markdown, disabled service actions, and starter catalog structure.
+`pnpm test` covers parameter injection, malformed pagination, combined filters, page boundaries, hidden/unpublished/future items, public user-field projection, safe links, non-executable Markdown, private identity ID/query boundaries, reviewed/paid publish eligibility, starter catalog structure, upload byte/signature boundaries, Stripe price allow-listing, and currency units.
 CI uses public build configuration only and never gets the editor token.
 It regenerates Sanity types, rejects generated-file drift, and runs non-incremental TypeScript checks plus the production OpenNext build.
-`tests/item-grid.types.ts` checks that the grid accepts ordinary item arrays and an intentionally disabled sponsor query's empty result without coupling its props to `never[]`.
+`tests/item-grid.types.ts` checks the grid's ordinary-item and sponsor-query contracts without coupling container props to a single query's inferred empty type.
 
 For a release, verify 1440, 768, and 390 pixel viewports with real browser interactions:
 
@@ -122,7 +137,8 @@ For a release, verify 1440, 768, and 390 pixel viewports with real browser inter
 - Categories, tags, collections, detail pages, and official external links.
 - Mobile navigation, refresh, direct URLs, browser back/forward, empty results, and genuine 404s.
 - Upstream-failure recovery, console errors, image/font/script MIME types, and metadata/robots/sitemap.
-- Disabled API and Server Action calls must not send email, perform mutations, initiate authentication, or create payments.
+- Anonymous or non-owner API/Server Action calls must not mutate protected content, send privileged notifications, or create unauthorized payments.
+- Verify real registration, verification, login/logout, settings, submission/review/publish, and each configured external integration according to [features.md](features.md).
 - Browser bundles and page/RSC responses must contain neither an editor token nor private user fields.
 
 Do not treat an HTTP 200, successful upload, or passing unit tests as a substitute for live browser validation.

@@ -78,7 +78,7 @@ export function EditForm({ item, tagList, categoryList }: EditFormProps) {
   const onSubmit = form.handleSubmit((data: EditFormData) => {
     // console.log('EditForm, onSubmit, data:', data);
     startTransition(async () => {
-      edit(data)
+      await edit(data)
         .then((data) => {
           if (data.status === "success") {
             console.log("EditForm, success:", data.message);

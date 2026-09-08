@@ -7,5 +7,7 @@ export const marketingConfig: MarketingConfig = {
     { title: "Collections", href: "/collection", icon: "collection" },
     { title: "Categories", href: "/category", icon: "category" },
     { title: "Tags", href: "/tag", icon: "tag" },
+    { title: "Blog", href: "/blog" },
+    { title: "Pricing", href: "/pricing" },
   ],
 };

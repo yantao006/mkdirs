@@ -2,7 +2,9 @@
 
 ## Product and runtime
 
-mkdirs is an independent, read-only public directory derived from the Apache-2.0 Mkdirs template.
+mkdirs is an independent directory product derived from the Apache-2.0 Mkdirs template.
+The product scope includes all implemented template capabilities; do not remove features because their external integration is not yet configured.
+Track actual integration status in `docs/features.md` and expose missing configuration honestly.
 Keep the incumbent Tailwind/shadcn visual system; do not replace the app with a different framework or design without approval.
 Supported scope, source attribution, and trademark boundaries are documented in `README.md`.
 
@@ -32,9 +34,10 @@ The generated shadcn UI primitives and generated Sanity files are excluded from 
 - `src/sanity/lib/queries.ts` owns named GROQ projections, with regression coverage in `tests/directory.test.ts`.
 - `src/sanity/lib/fetch.ts` reads published content without a write token and without persistent Next.js ISR bindings.
 - `/studio` loads `src/components/studio.tsx` client-side so the editor stack does not inflate the public server bundle.
-- `sanity.config.ts` exposes public content editing only; the dataset must not hold credentials, accounts, orders, or private notes.
-- `src/middleware.ts` rejects application mutations, and every template action in `src/actions/` explicitly rejects direct calls.
-- Removed auth/payment/mail/submission routes are not supported features; dormant template modules must not be silently re-enabled.
+- `src/lib/private-documents.ts`, `src/lib/identity-id.ts`, and `src/sanity/lib/private-client.ts` own authenticated user/account/token/order storage in private Sanity ID subpaths; never create these as public root documents or expose the write token.
+- `sanity.config.ts` restores the editor tools but excludes public-root creation and duplication of sensitive document types.
+- `src/auth.ts`, protected routes, and mutation actions must validate real sessions, ownership, and the original reviewed/paid publishing state contract.
+- `src/lib/service-config.ts` tracks service readiness; missing credentials never imply a successful payment, email, AI result, or registration.
 - `src/components/shared/custom-mdx.tsx` renders plain Markdown without executing MDX expressions or arbitrary HTML.
 - `content/directory.json` is the reviewed starter catalog; its importer never overwrites editor changes.
 

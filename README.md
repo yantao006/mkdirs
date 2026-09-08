@@ -4,7 +4,7 @@ An independent directory of useful developer tools and web resources, built from
 
 **Website:** https://mkdirs.yantao006.workers.dev
 
-## What works
+## Directory capabilities
 
 - Browse a curated starter catalog, search names and descriptions, and combine category and tag filters.
 - Explore categories, tags, collections, resource details, official external links, and paginated results.
@@ -15,10 +15,10 @@ The starter catalog contains 16 resources checked against their official website
 Its reference-card artwork is created for this directory, not copied product logos or website screenshots.
 Listings do not claim paid placement, traffic, ratings, endorsements, or current prices.
 
-Accounts, OAuth, payments, newsletter delivery, AI generation, application uploads, and visitor submissions are **not enabled**.
-Their application routes are removed, template service actions reject calls, and the public Worker accepts only GET/HEAD requests.
-Sanity Studio uses the editor's own Sanity login directly, not an application account or a browser-embedded API token.
-Some dormant template modules remain as upstream reference, not supported product features.
+The product scope includes the template's accounts, OAuth, dashboard, submission/review/publishing, Stripe payments and sponsorship, email/newsletter, AI assistance, blog, and Studio preview capabilities.
+These original routes and service actions are being restored and connected on this branch; the current public deployment remains the verified directory release until the full feature checks pass.
+See the [feature and integration matrix](docs/features.md) for implementation and configuration status rather than assuming a visible button means a service is connected.
+Sanity Studio uses the editor's own Sanity login directly, not a browser-embedded application API token.
 
 ## Development and checks
 
@@ -39,17 +39,20 @@ Sanity types are generated using `pnpm typegen` after changes to the schema or n
 
 The runtime is Next.js 15 / React 19 with the OpenNext Cloudflare adapter, retaining the template's Tailwind and shadcn design.
 Studio is loaded client-side to keep its editor dependencies out of the public Worker server bundle.
-No D1, R2, queue, payment service, or Cloudflare Images binding is required.
+The Cloudflare adapter needs no D1, R2, queue, or Cloudflare Images binding.
+Payments use Stripe, email/newsletter use Resend, and OAuth/AI use the product-specific providers listed in the integration matrix.
 
 See [operations and content updates](docs/operations.md) for importing content, deploying, rolling back, and validating the site.
 CI runs lint, type checking, regression tests, and the production Cloudflare build without secrets.
 
 ## Content and access boundaries
 
-This product uses its own public Sanity dataset, containing public directory content only.
-Never put passwords, OAuth tokens, accounts, orders, private notes, or other secrets in it.
-The production app reads anonymously and has no Sanity editor token.
-An editor token is used only by the local import command, with an explicit target-project confirmation and non-overwriting imports.
+This product uses its own Sanity Free public dataset with two distinct document access paths.
+Public content has ordinary root IDs and is read anonymously; identity, account, verification/reset-token, and order records must use the private `mkdirsPrivate.<type>.<opaque-id>` subpaths.
+Sanity's [fixed access rules](https://www.sanity.io/docs/content-lake/ids) require authentication for all subpath IDs, including when the dataset is public.
+Never create sensitive records with root IDs or put personal data in an ID.
+Authenticated reads and writes use the server-only client; the Sanity token must never reach browser bundles, public responses, or logs.
+The import command requires explicit target-project confirmation and never overwrites existing editor changes.
 
 ## Source and license
 

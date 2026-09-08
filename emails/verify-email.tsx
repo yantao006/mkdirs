@@ -43,7 +43,7 @@ export const VerifyEmail = ({ confirmLink }: VerifyEmailProps) => {
         <Container style={container}>
           <Section style={box}>
             <Img
-              src={`${baseUrl}/logo.png`}
+              src={`${baseUrl}/favicon-32x32.png`}
               width="32"
               height="32"
               alt="Logo"
@@ -78,10 +78,6 @@ export const VerifyEmail = ({ confirmLink }: VerifyEmailProps) => {
                 &nbsp;&nbsp; All Rights Reserved.
               </span>
               <span style={footerRight}>
-                <Link style={anchor} href={siteConfig.links.twitter}>
-                  Twitter
-                </Link>
-                &nbsp;&nbsp;&nbsp;&nbsp;
                 <Link style={anchor} href={siteConfig.links.github}>
                   GitHub
                 </Link>
@@ -95,7 +91,7 @@ export const VerifyEmail = ({ confirmLink }: VerifyEmailProps) => {
 };
 
 VerifyEmail.PreviewProps = {
-  confirmLink: "https://demo.mkdirs.com",
+  confirmLink: "https://example.invalid/auth/new-verification",
 } as VerifyEmailProps;
 
 export default VerifyEmail;

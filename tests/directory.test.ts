@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { readFile, readdir } from "node:fs/promises";
+import { readFile } from "node:fs/promises";
 import { test } from "node:test";
 import { evaluate, parse } from "groq-js";
 import { createElement } from "react";
@@ -217,32 +217,6 @@ test("directory Markdown does not execute expressions or render arbitrary HTML",
   );
   assert.ok(!html.includes("<script>"));
   assert.ok(!html.includes('href="javascript:'));
-});
-
-test("all template service actions reject direct calls without a network request", async () => {
-  const original = globalThis.fetch;
-  let calls = 0;
-  globalThis.fetch = async () => {
-    calls++;
-    throw new Error("Unexpected network");
-  };
-  try {
-    for (const file of await readdir(
-      new URL("../src/actions/", import.meta.url),
-    )) {
-      if (!file.endsWith(".ts")) continue;
-      const module = await import(
-        new URL(`../src/actions/${file}`, import.meta.url).href
-      );
-      for (const action of Object.values(module)) {
-        if (typeof action === "function")
-          await assert.rejects(() => action(), /read-only/);
-      }
-    }
-    assert.equal(calls, 0);
-  } finally {
-    globalThis.fetch = original;
-  }
 });
 
 test("starter catalog is unique, sourced, and contains only public content", async () => {

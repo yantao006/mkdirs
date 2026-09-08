@@ -10,6 +10,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { siteConfig } from "@/config/site";
+import { useCurrentUser } from "@/hooks/use-current-user";
 import { cn } from "@/lib/utils";
 import type { DashboardConfig, MarketingConfig } from "@/types";
 import { MenuIcon } from "lucide-react";
@@ -17,11 +18,13 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { ModeToggle } from "./mode-toggle";
+import { UserButton } from "./user-button";
 
 export function Navbar({
   config,
 }: { scroll?: boolean; config: DashboardConfig | MarketingConfig }) {
   const pathname = usePathname();
+  const user = useCurrentUser();
   const [open, setOpen] = useState(false);
   useEffect(() => {
     if (pathname) setOpen(false);
@@ -41,7 +44,7 @@ export function Navbar({
         </Link>
         <nav
           aria-label="Main navigation"
-          className="hidden lg:flex items-center gap-6"
+          className="hidden lg:flex items-center gap-4"
         >
           {config.menus.map((item) => (
             <Link
@@ -58,6 +61,16 @@ export function Navbar({
           ))}
         </nav>
         <div className="flex items-center gap-2">
+          <Button asChild size="sm" className="hidden sm:inline-flex">
+            <Link href="/submit">Submit</Link>
+          </Button>
+          {user ? (
+            <UserButton />
+          ) : (
+            <Button asChild size="sm" variant="ghost">
+              <Link href="/auth/login">Sign in</Link>
+            </Button>
+          )}
           <ModeToggle />
           <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
@@ -72,7 +85,16 @@ export function Navbar({
                 aria-label="Mobile navigation"
                 className="mt-8 flex flex-col gap-2"
               >
-                {config.menus.map((item) => (
+                {[
+                  ...config.menus,
+                  { title: "Submit a resource", href: "/submit" },
+                  ...(user
+                    ? [
+                        { title: "Dashboard", href: "/dashboard" },
+                        { title: "Settings", href: "/settings" },
+                      ]
+                    : [{ title: "Create an account", href: "/auth/register" }]),
+                ].map((item) => (
                   <Link
                     key={item.href}
                     href={item.href}

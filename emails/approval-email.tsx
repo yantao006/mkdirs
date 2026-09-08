@@ -44,7 +44,7 @@ export const ApprovalEmail = ({ userName, itemLink }: ApprovalEmailProps) => {
         <Container style={container}>
           <Section style={box}>
             <Img
-              src={`${baseUrl}/logo.png`}
+              src={`${baseUrl}/favicon-32x32.png`}
               width="32"
               height="32"
               alt="Logo"
@@ -59,11 +59,11 @@ export const ApprovalEmail = ({ userName, itemLink }: ApprovalEmailProps) => {
               . We're so excited to include your product in our directory!
             </Text>
             <Text style={paragraph}>
-              Your product has been successfully added to our directory. You can
-              view your listing by clicking the button below:
+              Your submission has been approved. You can now publish it from
+              your dashboard using the button below:
             </Text>
             <Button style={button} href={itemLink}>
-              View your product
+              Manage publication
             </Button>
             <Hr style={hr} />
             <Text style={paragraph}>
@@ -92,10 +92,6 @@ export const ApprovalEmail = ({ userName, itemLink }: ApprovalEmailProps) => {
                 &nbsp;&nbsp; All Rights Reserved.
               </span>
               <span style={footerRight}>
-                <Link style={anchor} href={siteConfig.links.twitter}>
-                  Twitter
-                </Link>
-                &nbsp;&nbsp;&nbsp;&nbsp;
                 <Link style={anchor} href={siteConfig.links.github}>
                   GitHub
                 </Link>
@@ -109,8 +105,8 @@ export const ApprovalEmail = ({ userName, itemLink }: ApprovalEmailProps) => {
 };
 
 ApprovalEmail.PreviewProps = {
-  userName: "Javayhu",
-  itemLink: "https://demo.mkdirs.com",
+  userName: "Example member",
+  itemLink: "https://example.invalid/dashboard",
 } as ApprovalEmailProps;
 
 export default ApprovalEmail;

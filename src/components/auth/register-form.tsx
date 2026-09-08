@@ -39,8 +39,8 @@ export const RegisterForm = () => {
     setError("");
     setSuccess("");
 
-    startTransition(() => {
-      register(values)
+    startTransition(async () => {
+      await register(values)
         .then((data) => {
           if (data.status === "error") {
             console.log("register, error:", data.message);

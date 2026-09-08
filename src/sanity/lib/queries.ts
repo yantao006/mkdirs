@@ -44,7 +44,7 @@ export const itemSimpleFields = /* groq */ `
   description,
   link,
   affiliateLink,
-  "sponsor": false,
+  sponsor,
   sponsorStartDate,
   sponsorEndDate,
   "note": null,
@@ -92,8 +92,10 @@ const itemFieldsWithRelated = /* groq */ `
   ${itemSimpleFields}
 `;
 
+// Server-only callers must use privateFetch and enforce owner/admin authorization.
 export const itemByIdQuery = defineQuery(`*[_type == "item" && _id == $id][0] {
   ${itemSimpleFields}
+  note, rejectionReason, "order": order->
 }`);
 
 export const itemInfoBySlugQuery = defineQuery(`*[_type == "item" && slug.current == $slug && defined(publishDate) && publishDate <= now() && forceHidden != true][0] {
@@ -102,6 +104,7 @@ export const itemInfoBySlugQuery = defineQuery(`*[_type == "item" && slug.curren
 
 export const itemFullInfoByIdQuery = defineQuery(`*[_type == "item" && _id == $id][0] {
   ${itemFields}
+  note, rejectionReason, "order": order->
 }`);
 
 export const itemFullInfoBySlugQuery = defineQuery(`*[_type == "item" && slug.current == $slug
@@ -123,8 +126,8 @@ export const itemListQuery = defineQuery(`*[_type == "item" && defined(slug.curr
 }`);
 
 // get sponsor items
-export const sponsorItemListQuery = defineQuery(`*[_type == "item" && false && defined(slug.current)
-  && defined(publishDate)
+export const sponsorItemListQuery = defineQuery(`*[_type == "item" && defined(slug.current)
+  && defined(publishDate) && publishDate <= now()
   && forceHidden != true
   && sponsor == true
   && sponsorStartDate <= now()
@@ -239,7 +242,7 @@ export const blogPostSimpleFields = /* groq */ `
 `;
 
 const blogPostFields = /* groq */ `
-  relatedPosts[]-> {
+  "relatedPosts": relatedPosts[]->[defined(publishDate) && publishDate <= now()] {
     ${blogPostSimpleFields}
   },
   body[]{
@@ -284,12 +287,12 @@ export const blogCategoryMetadateQuery = defineQuery(`
 `);
 
 export const blogPostQuery = defineQuery(`
-  *[_type == "blogPost" && slug.current == $slug][0] {
+  *[_type == "blogPost" && slug.current == $slug && defined(publishDate) && publishDate <= now()][0] {
     ${blogPostFields}
 }`);
 
 export const blogPostMetadataQuery = defineQuery(`
-  *[_type == "blogPost" && slug.current == $slug][0] {
+  *[_type == "blogPost" && slug.current == $slug && defined(publishDate) && publishDate <= now()][0] {
     ${blogPostSimpleFields}
 }`);
 
@@ -299,14 +302,14 @@ export const blogPostMetadataQuery = defineQuery(`
  * if you want to change this query, please update data/blog.ts
  */
 export const blogPostListQuery = defineQuery(`
-  *[_type == "blogPost" && defined(slug.current) && defined(publishDate)] 
-  | order(publishDate desc) {
+  *[_type == "blogPost" && defined(slug.current) && defined(publishDate) && publishDate <= now()]
+  | order(publishDate desc, _id asc) {
     ${blogPostSimpleFields}
 }`);
 
 export const blogPostListOfLatestQuery = defineQuery(`
-  *[_type == "blogPost" && defined(slug.current) && defined(publishDate)] 
-  | order(publishDate desc) [0...$count] {
+  *[_type == "blogPost" && defined(slug.current) && defined(publishDate) && publishDate <= now()]
+  | order(publishDate desc, _id asc) [0...$count] {
     ${blogPostSimpleFields}
 }`);
 
@@ -333,7 +336,7 @@ export const blogCategoryWithCountQuery = groq`
  */
 
 export const userWithAccountsQuery = defineQuery(`
-  *[_type == "user" && _id == $id][0] {
+  *[_type == "user" && _id in path("mkdirsPrivate.user.*") && _id == $id][0] {
     ...,
     accounts[]->,
   }

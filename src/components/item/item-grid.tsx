@@ -32,7 +32,9 @@ export default async function ItemGrid({
   // show sponsor item in the 3rd item
   const allItems = [
     ...items.slice(0, 2),
-    ...(Array.isArray(sponsorItems) && sponsorItems.length > 0
+    ...(Array.isArray(sponsorItems) &&
+    sponsorItems.length > 0 &&
+    !items.some((item) => item._id === sponsorItems[0]._id)
       ? [sponsorItems[0]]
       : []),
     ...items.slice(2),

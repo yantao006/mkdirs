@@ -1,5 +1,6 @@
 import * as z from "zod";
 import { SUPPORT_ITEM_ICON } from "./constants";
+import { safeExternalUrl } from "./directory-query";
 
 /**
  * newsletter schema
@@ -20,7 +21,12 @@ export const baseSubmitSchema = {
     .string()
     .min(1, { message: "Name is required" })
     .max(32, { message: "Name must be 32 or fewer characters long" }),
-  link: z.string().url({ message: "Invalid url" }),
+  link: z
+    .string()
+    .url({ message: "Invalid url" })
+    .refine((value) => !!safeExternalUrl(value), {
+      message: "Use an HTTP(S) website URL without embedded credentials",
+    }),
   description: z
     .string()
     .min(1, { message: "Description is required" })
@@ -60,7 +66,12 @@ export const EditSchema = SubmitSchema.extend({
 export const SettingsSchema = z
   .object({
     name: z.string().min(1, { message: "Name is required" }),
-    link: z.string().optional(),
+    link: z
+      .string()
+      .optional()
+      .refine((value) => !value || !!safeExternalUrl(value), {
+        message: "Use an HTTP(S) profile URL",
+      }),
     password: z.optional(z.string().min(6)),
     newPassword: z.optional(z.string().min(6)),
   })
@@ -104,7 +115,10 @@ export const UserLinkSchema = z.object({
   link: z
     .string()
     .min(0, { message: "Link is optional" })
-    .max(128, { message: "Link must be 128 or fewer characters long" }),
+    .max(128, { message: "Link must be 128 or fewer characters long" })
+    .refine((value) => !value || !!safeExternalUrl(value), {
+      message: "Use an HTTP(S) profile URL",
+    }),
 });
 
 export type UserLinkData = z.infer<typeof UserLinkSchema>;

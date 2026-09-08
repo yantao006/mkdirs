@@ -33,7 +33,11 @@ export function ProPlanButton({
 
   const handleCreateCheckoutSession = () => {
     startTransition(async () => {
-      createCheckoutSession(item._id, pricePlan.stripePriceId, PricePlans.PRO)
+      await createCheckoutSession(
+        item._id,
+        pricePlan.stripePriceId,
+        PricePlans.PRO,
+      )
         .then((data) => {
           console.log("createCheckoutSession, data:", data);
           // already redirected to stripe checkout page in server action

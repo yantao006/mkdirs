@@ -10,6 +10,9 @@ import {
 } from "@/lib/constants";
 import { normalizePage, normalizeSearchParams } from "@/lib/directory-query";
 import { constructMetadata } from "@/lib/metadata";
+import type { SponsorItemListQueryResult } from "@/sanity.types";
+import { sanityFetch } from "@/sanity/lib/fetch";
+import { sponsorItemListQuery } from "@/sanity/lib/queries";
 
 export const metadata = constructMetadata({
   title: "",
@@ -17,10 +20,12 @@ export const metadata = constructMetadata({
 });
 
 export default async function HomePage({
-  searchParams,
+  searchParams: searchParamsPromise,
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
+  const searchParams = (await searchParamsPromise) || {};
+
   const {
     category,
     tag,
@@ -40,6 +45,9 @@ export default async function HomePage({
     filter,
     currentPage: normalizePage(page),
   });
+  const sponsorItems = await sanityFetch<SponsorItemListQueryResult>({
+    query: sponsorItemListQuery,
+  });
   return (
     <div>
       <output className="mb-4 block text-sm text-muted-foreground">
@@ -49,7 +57,7 @@ export default async function HomePage({
         <EmptyGrid />
       ) : (
         <section aria-label="Directory resources">
-          <ItemGrid items={items} sponsorItems={[]} showSponsor={false} />
+          <ItemGrid items={items} sponsorItems={sponsorItems} showSponsor />
           <div className="mt-8 flex justify-center">
             <CustomPagination
               routePrefix="/"

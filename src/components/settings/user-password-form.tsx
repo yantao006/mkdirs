@@ -34,8 +34,8 @@ export function UserPasswordForm() {
   });
 
   const onSubmit = form.handleSubmit((values) => {
-    startTransition(() => {
-      updateUserPassword(values)
+    startTransition(async () => {
+      await updateUserPassword(values)
         .then((data) => {
           if (data.status === "error") {
             console.log("UserPasswordForm, error:", data.message);

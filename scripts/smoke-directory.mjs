@@ -10,7 +10,10 @@ async function request(path, expected, options = {}) {
     signal: AbortSignal.timeout(30000),
   });
   const body = await response.text();
-  assert.equal(response.status, expected, `${path}: unexpected HTTP status`);
+  assert.ok(
+    (Array.isArray(expected) ? expected : [expected]).includes(response.status),
+    `${path}: unexpected HTTP status ${response.status}`,
+  );
   results.push({
     path,
     status: response.status,
@@ -37,23 +40,44 @@ for (const path of [
   "/tag/not-a-tag",
   "/collection/not-a-collection",
   "/not-a-page",
-  "/auth/login",
-  "/api/auth/session",
 ]) {
   await request(path, 404);
 }
 for (const path of [
-  "/api/webhook",
-  "/api/send-email",
-  "/api/upload-image",
-  "/",
+  "/auth/login",
+  "/auth/register",
+  "/auth/reset",
+  "/pricing",
+  "/blog",
 ]) {
-  await request(path, 405, {
+  await request(path, 200);
+}
+const { body: session } = await request("/api/auth/session", 200);
+assert.ok(
+  [null, undefined].includes(JSON.parse(session)?.user),
+  "anonymous request must not receive a user",
+);
+for (const path of ["/dashboard", "/settings", "/submit"]) {
+  const { response } = await request(path, [302, 307], { redirect: "manual" });
+  assert.match(response.headers.get("location"), /\/auth\/login/);
+}
+for (const path of ["/api/send-email", "/api/upload-image"]) {
+  await request(path, 403, {
     method: "POST",
     body: "{}",
-    headers: { "content-type": "application/json" },
+    headers: {
+      "content-type": "application/json",
+      origin: "https://example.invalid",
+    },
   });
 }
+await request("/api/upload-image", [401, 503], {
+  method: "POST",
+  body: "{}",
+  headers: { "content-type": "application/json", origin },
+});
+await request("/api/webhook", [400, 503], { method: "POST", body: "{}" });
+// 503 means explicitly unconfigured, not an accepted upload/payment or an end-to-end pass.
 const { body: sitemap } = await request("/sitemap.xml", 200);
 assert.match(sitemap, /<urlset/);
 assert.ok(sitemap.includes(`${origin}/item/`));

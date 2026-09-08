@@ -20,7 +20,7 @@ export function UnpublishButton({ item }: UnpublishButtonProps) {
 
   const unpublishAction = () => {
     startTransition(async () => {
-      unpublish(item._id)
+      await unpublish(item._id)
         .then((data) => {
           if (data.status === "success") {
             console.log("unpublishAction, success:", data.message);

@@ -41,8 +41,8 @@ export const NewPasswordForm = () => {
     setError("");
     setSuccess("");
 
-    startTransition(() => {
-      newPassword(values, token)
+    startTransition(async () => {
+      await newPassword(values, token)
         .then((data) => {
           if (data?.status === "error") {
             console.log("newPassword, error:", data.message);
