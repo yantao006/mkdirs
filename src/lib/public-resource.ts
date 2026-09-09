@@ -7,7 +7,11 @@ const blockedSuffixes = [
 ];
 
 export function publicResourceUrl(value: string): URL {
-  const url = new URL(value);
+  const trimmed = value.trim();
+  const candidate = /^[a-zA-Z][a-zA-Z0-9+.-]*:/.test(trimmed)
+    ? trimmed
+    : `https://${trimmed}`;
+  const url = new URL(candidate);
   const host = url.hostname.replace(/\.$/, "").toLowerCase();
   if (
     !["http:", "https:"].includes(url.protocol) ||
@@ -86,6 +90,7 @@ async function checkPublicDns(hostname: string) {
 export async function fetchPublicResource(
   value: string,
   maxBytes: number,
+  options?: { truncate?: boolean },
 ): Promise<Response> {
   let url = publicResourceUrl(value);
   for (let redirects = 0; redirects <= 3; redirects++) {
@@ -109,12 +114,18 @@ export async function fetchPublicResource(
     for (;;) {
       const { done, value: chunk } = await reader.read();
       if (done) break;
-      length += chunk.byteLength;
-      if (length > maxBytes) {
+      if (length + chunk.byteLength > maxBytes) {
+        if (!options?.truncate) {
+          await reader.cancel();
+          throw new Error("Website response is too large");
+        }
+        chunks.push(chunk.slice(0, maxBytes - length));
+        length = maxBytes;
         await reader.cancel();
-        throw new Error("Website response is too large");
+        break;
       }
       chunks.push(chunk);
+      length += chunk.byteLength;
     }
     const body = new Uint8Array(length);
     let offset = 0;

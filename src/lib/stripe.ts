@@ -8,5 +8,8 @@ export function getStripe(): Stripe {
   return new Stripe(process.env.STRIPE_API_KEY, {
     apiVersion: "2024-04-10",
     typescript: true,
+    httpClient: Stripe.createFetchHttpClient(),
+    timeout: 10000,
+    maxNetworkRetries: 1,
   });
 }

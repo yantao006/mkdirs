@@ -8,7 +8,6 @@ import { serviceConfigured } from "@/lib/service-config";
 import { getStripe } from "@/lib/stripe";
 import { absoluteUrl } from "@/lib/utils";
 import { sanityClient } from "@/sanity/lib/private-client";
-import { redirect } from "next/navigation";
 
 export type ServerActionResponse = {
   status: "success" | "error";
@@ -105,5 +104,5 @@ export async function createCheckoutSession(
         "Unable to open payment. No publication status has been changed.",
     };
   }
-  redirect(redirectUrl);
+  return { status: "success", stripeUrl: redirectUrl };
 }

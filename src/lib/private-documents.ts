@@ -12,8 +12,9 @@ export function privateDocumentId(type: PrivateDocumentType): string {
   return `${PRIVATE_DOCUMENT_ROOT}.${type}.${crypto.randomUUID()}`;
 }
 
+/** User/account IDs are HMAC-SHA256 hex; tokens and orders use UUIDs. */
 export function isPrivateDocumentId(id: string): boolean {
-  return /^mkdirsPrivate\.(user|account|verificationToken|passwordResetToken|order)\.[a-f0-9-]{36}$/.test(
+  return /^mkdirsPrivate\.(user|account|verificationToken|passwordResetToken|order)\.([a-f0-9]{64}|[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})$/.test(
     id,
   );
 }

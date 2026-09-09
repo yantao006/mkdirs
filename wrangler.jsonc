@@ -13,8 +13,16 @@
     "binding": "ASSETS"
   },
   "vars": {
-    "NEXT_PUBLIC_APP_URL": "https://mkdirs.yantao006.workers.dev",
+    "NEXT_PUBLIC_APP_URL": "https://yanbao.space",
     "NEXT_PUBLIC_SANITY_PROJECT_ID": "it1vepjy",
-    "NEXT_PUBLIC_SANITY_DATASET": "production"
-  }
+    "NEXT_PUBLIC_SANITY_DATASET": "production",
+    "AUTH_TRUST_HOST": "true",
+    "DEFAULT_AI_PROVIDER": "deepseek",
+    "NEXT_PUBLIC_STRIPE_PRO_PRICE_ID": "price_1UDe8SJdM1wbhTkATnsSzHQm",
+    "NEXT_PUBLIC_STRIPE_SPONSOR_PRICE_ID": "price_1UDe8eJdM1wbhTkAE9Lrt7l7"
+  },
+  "routes": [
+    { "pattern": "yanbao.space", "custom_domain": true },
+    { "pattern": "www.yanbao.space", "custom_domain": true }
+  ]
 }

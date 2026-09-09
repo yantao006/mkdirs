@@ -5,7 +5,7 @@ import {
   paymentOrderId,
   stripeAmount,
 } from "../src/lib/payment-policy";
-import { PricePlans } from "../src/lib/submission";
+import { PricePlans, canStartPaidCheckout } from "../src/lib/submission";
 import { readBoundedBody, validImageSignature } from "../src/lib/upload";
 
 test("image uploads reject active content and spoofed MIME", () => {
@@ -70,6 +70,15 @@ test("payment uses configured prices rather than client-provided plan and amount
       Reflect.deleteProperty(process.env, "NEXT_PUBLIC_STRIPE_PRO_PRICE_ID");
     else process.env.NEXT_PUBLIC_STRIPE_PRO_PRICE_ID = old;
   }
+});
+
+test("free submissions with unset paid status can start checkout", () => {
+  assert.equal(canStartPaidCheckout(undefined), true);
+  assert.equal(canStartPaidCheckout(null), true);
+  assert.equal(canStartPaidCheckout("pending"), true);
+  assert.equal(canStartPaidCheckout("submitting"), true);
+  assert.equal(canStartPaidCheckout("success"), false);
+  assert.equal(canStartPaidCheckout("failed"), false);
 });
 
 test("Stripe zero-decimal currency prices are not divided by 100", () => {
