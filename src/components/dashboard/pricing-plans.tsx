@@ -2,6 +2,7 @@
 
 import { FreePlanButton } from "@/components/payment/free-plan-button";
 import { ProPlanButton } from "@/components/payment/pro-plan-button";
+import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { priceConfig } from "@/config/price";
 import { PricePlans } from "@/lib/submission";
@@ -12,14 +13,18 @@ import { SponsorPlanButton } from "../payment/sponsor-plan-button";
 
 interface PricingPlansProps {
   item?: ItemInfo;
+  plans?: PricePlan[];
 }
 
-export function PricingPlans({ item }: PricingPlansProps) {
+export function PricingPlans({
+  item,
+  plans = priceConfig.plans,
+}: PricingPlansProps) {
   // console.log('PricingPlans, item:', item);
   return (
     <section className="flex flex-col items-center text-center w-full mx-auto">
       <div className="grid gap-8 w-full sm:grid-cols-1 lg:grid-cols-3 items-center">
-        {priceConfig.plans.map((pricePlan) => (
+        {plans.map((pricePlan) => (
           <PricingPlanCard
             item={item}
             key={pricePlan.title}
@@ -39,13 +44,6 @@ interface PricingPlanCardProps {
 const PricingPlanCard = ({ item, pricePlan }: PricingPlanCardProps) => {
   return (
     <div className="relative pt-4">
-      {isProPlan(pricePlan) && (
-        <div className="absolute top-0.5 left-1/2 transform -translate-x-1/2 z-10">
-          <div className="bg-primary text-primary-foreground px-4 py-1 rounded-full text-sm font-semibold">
-            POPULAR
-          </div>
-        </div>
-      )}
       <div
         className={cn(
           "relative overflow-hidden flex flex-col rounded-xl shadow-sm",
@@ -59,7 +57,14 @@ const PricingPlanCard = ({ item, pricePlan }: PricingPlanCardProps) => {
           </span>
           <div className="flex items-baseline gap-2">
             <div className="text-4xl font-semibold font-workSans leading-relaxed text-primary">
-              ${pricePlan.price}
+              {pricePlan.price === null
+                ? "Pending"
+                : pricePlan.currency
+                  ? new Intl.NumberFormat("en", {
+                      style: "currency",
+                      currency: pricePlan.currency,
+                    }).format(pricePlan.price)
+                  : "Free"}
             </div>
             <div className="text-sm font-semibold font-workSans leading-relaxed text-muted-foreground">
               {pricePlan.priceSuffix}
@@ -89,13 +94,24 @@ const PricingPlanCard = ({ item, pricePlan }: PricingPlanCardProps) => {
 
           {/* action buttons */}
           <div className="mt-12 px-6">
-            {pricePlan.title.toUpperCase() === PricePlans.FREE.toUpperCase() ? (
+            {pricePlan.price === null ? (
+              <Button
+                disabled
+                variant="outline"
+                className="w-full whitespace-normal h-auto py-3"
+              >
+                Payments awaiting configuration
+              </Button>
+            ) : pricePlan.title.toUpperCase() ===
+              PricePlans.FREE.toUpperCase() ? (
               <FreePlanButton item={item} className="w-full" />
-            ) : pricePlan.title.toUpperCase() === PricePlans.SPONSOR.toUpperCase() ? (
-              <SponsorPlanButton 
+            ) : pricePlan.title.toUpperCase() ===
+              PricePlans.SPONSOR.toUpperCase() ? (
+              <SponsorPlanButton
                 item={item}
                 pricePlan={pricePlan}
-                className="w-full" />
+                className="w-full"
+              />
             ) : (
               <ProPlanButton
                 item={item}

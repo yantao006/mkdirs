@@ -8,18 +8,17 @@ import { pageQuery } from "@/sanity/lib/queries";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 export async function generateMetadata({
-  params,
+  params: paramsPromise,
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }): Promise<Metadata | undefined> {
+  const params = await paramsPromise;
+
   const page = await sanityFetch<PageQueryResult>({
     query: pageQuery,
     params: { slug: params.slug },
   });
-  if (!page) {
-    console.warn(`generateMetadata, page not found for slug: ${params.slug}`);
-    return;
-  }
+  if (!page) notFound();
 
   return constructMetadata({
     title: page.title,
@@ -29,10 +28,14 @@ export async function generateMetadata({
 }
 
 interface CustomPageProps {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }
 
-export default async function CustomPage({ params }: CustomPageProps) {
+export default async function CustomPage({
+  params: paramsPromise,
+}: CustomPageProps) {
+  const params = await paramsPromise;
+
   console.log(`CustomPage, params: ${JSON.stringify(params)}`);
   const page = await sanityFetch<PageQueryResult>({
     query: pageQuery,

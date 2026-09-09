@@ -34,8 +34,8 @@ export function UserLinkForm() {
 
   const onSubmit = form.handleSubmit((values) => {
     console.log("UserLinkForm, values:", values);
-    startTransition(() => {
-      updateUserLink(values)
+    startTransition(async () => {
+      await updateUserLink(values)
         .then((data) => {
           if (data.status === "error") {
             console.log("UserLinkForm, error:", data.message);
@@ -72,11 +72,7 @@ export function UserLinkForm() {
             placeholder="Enter your link, max 128 characters"
             onChange={(e) => checkUpdate(e.target.value)}
           />
-          <Button
-            type="submit"
-            disabled={isPending || !updated}
-            className=""
-          >
+          <Button type="submit" disabled={isPending || !updated} className="">
             {isPending ? (
               <div className="flex items-center gap-2">
                 <Icons.spinner className="size-4 animate-spin" />

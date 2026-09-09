@@ -4,7 +4,7 @@ import { unstable_update } from "@/auth";
 import { getUserById } from "@/data/user";
 import { currentUser } from "@/lib/auth";
 import { type UserNameData, UserNameSchema } from "@/lib/schemas";
-import { sanityClient } from "@/sanity/lib/client";
+import { sanityClient } from "@/sanity/lib/private-client";
 import { revalidatePath } from "next/cache";
 
 export type ServerActionResponse = {
@@ -38,7 +38,7 @@ export async function updateUserName(
     // console.log("updateUserName, user:", updatedUser);
 
     // unstable update in Beta version
-    unstable_update({
+    await unstable_update({
       user: {
         name: updatedUser.name,
       },
@@ -47,7 +47,6 @@ export async function updateUserName(
     revalidatePath("/settings");
     return { status: "success", message: "User name updated!" };
   } catch (error) {
-    console.log("updateUserName, error", error);
     return {
       status: "error",
       message: "Failed to update user name!",

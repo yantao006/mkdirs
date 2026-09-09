@@ -5,7 +5,7 @@ import type { SUPPORT_ITEM_ICON } from "@/lib/constants";
 import { SubmitSchema } from "@/lib/schemas";
 import { FreePlanStatus, PricePlans } from "@/lib/submission";
 import { slugify } from "@/lib/utils";
-import { sanityClient } from "@/sanity/lib/client";
+import { sanityClient } from "@/sanity/lib/private-client";
 import { revalidatePath } from "next/cache";
 
 type BaseSubmitFormData = {
@@ -33,12 +33,27 @@ export type ServerActionResponse = {
  */
 export async function submit(
   formData: SubmitFormData,
+  requestId: string,
 ): Promise<ServerActionResponse> {
   try {
     const user = await currentUser();
-    if (!user) {
+    if (!user?.id) {
       return { status: "error", message: "Unauthorized" };
     }
+    if (!/^[0-9a-f-]{36}$/.test(requestId)) {
+      return {
+        status: "error",
+        message: "Invalid submission request; reload the form",
+      };
+    }
+    const digest = await crypto.subtle.digest(
+      "SHA-256",
+      new TextEncoder().encode(`${user.id}:${requestId}`),
+    );
+    const id = `submission-${Buffer.from(digest).toString("hex")}`;
+    const previous = await sanityClient.getDocument(id);
+    if (previous)
+      return { status: "success", message: "Submission already saved", id };
 
     // console.log("submit, data:", formData);
     const {
@@ -52,20 +67,11 @@ export async function submit(
       ...rest
     } = SubmitSchema.parse(formData);
     const iconId = "iconId" in rest ? rest.iconId : undefined;
-    console.log("submit, name:", name, "link:", link);
 
-    let slug = slugify(name);
-    // check if the slug already exists
-    const existingItem = await sanityClient.fetch(
-      `*[_type == "item" && slug.current == $slug][0]`,
-      { slug },
-    );
-    if (existingItem) {
-      const slugLink = slugify(link.replace(/^https?:\/\//, ""));
-      slug = `${slug}-${slugLink}`;
-    }
-
+    // A stable request suffix avoids concurrent name collisions without renaming existing URLs.
+    const slug = `${slugify(name).slice(0, 100) || "resource"}-${id.slice(-12)}`;
     const data = {
+      _id: id,
       _type: "item",
       name,
       slug: {
@@ -118,9 +124,8 @@ export async function submit(
 
     // console.log("submit, data:", data);
 
-    const res = await sanityClient.create(data);
+    const res = await sanityClient.createIfNotExists(data);
     if (!res) {
-      console.log("submit, fail");
       return { status: "error", message: "Failed to submit" };
     }
 
@@ -135,7 +140,6 @@ export async function submit(
 
     return { status: "success", message: "Successfully created", id: res._id };
   } catch (error) {
-    console.log("submit, error", error);
     return { status: "error", message: "Failed to submit" };
   }
 }

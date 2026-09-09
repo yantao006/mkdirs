@@ -6,25 +6,26 @@ import {
   fontSourceSerif,
   fontWorkSans,
 } from "@/assets/fonts";
+
 import { auth } from "@/auth";
 import { Analytics } from "@/components/analytics/analytics";
 import { TailwindIndicator } from "@/components/tailwind-indicator";
 import { Toaster } from "@/components/ui/sonner";
 import { constructMetadata } from "@/lib/metadata";
+import { serviceConfigured } from "@/lib/service-config";
 import { cn } from "@/lib/utils";
 import { SessionProvider } from "next-auth/react";
 import { ThemeProvider } from "next-themes";
 
 export const metadata = constructMetadata();
+export const dynamic = "force-dynamic";
 
 interface RootLayoutProps {
   children: React.ReactNode;
 }
 
 export default async function RootLayout({ children }: RootLayoutProps) {
-  // https://youtu.be/1MTyCvS05V4?t=21464
-  const session = await auth();
-
+  const session = serviceConfigured("accounts") ? await auth() : null;
   return (
     <html lang="en" suppressHydrationWarning>
       <head />
@@ -54,7 +55,6 @@ export default async function RootLayout({ children }: RootLayoutProps) {
             <Toaster richColors position="top-right" offset={64} />
 
             <TailwindIndicator />
-
             <Analytics />
           </ThemeProvider>
         </SessionProvider>

@@ -1,84 +1,45 @@
-/**
- * Send a message to Discord when a user makes a purchase
- * @param sessionId The Stripe checkout session ID
- * @param customerId The Stripe customer ID
- * @param userName The username of the customer
- * @param amount The purchase amount in the currency's main unit (e.g., dollars, not cents)
- */
+import "server-only";
+
 export async function sendMessageToDiscord(
   sessionId: string,
   customerId: string,
   userName: string,
   amount: number,
+  currency = "usd",
 ): Promise<void> {
-  try {
-    const webhookUrl = process.env.DISCORD_WEBHOOK_URL;
-
-    if (!webhookUrl) {
-      console.info(
-        "DISCORD_WEBHOOK_URL is not set, skipping Discord notification",
-      );
-      return;
-    }
-
-    // Format the message
-    const message = {
-      // You can customize these values later
-      username: "MkDirs Bot",
-      avatar_url: "https://mkdirs.com/logo.png",
+  const webhookUrl = process.env.DISCORD_WEBHOOK_URL;
+  if (!webhookUrl)
+    throw new Error("Discord notifications are awaiting configuration");
+  const response = await fetch(webhookUrl, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      username: "mkdirs",
       embeds: [
         {
-          title: "🎉 New Purchase",
-          color: 0x4caf50, // Green color
+          title: "Payment received",
           fields: [
             {
-              name: "Username",
-              value: userName,
+              name: "Customer",
+              value: userName || "Directory member",
               inline: true,
             },
             {
               name: "Amount",
-              value: `$${amount.toFixed(2)}`,
+              value: new Intl.NumberFormat("en", {
+                style: "currency",
+                currency,
+              }).format(amount),
               inline: true,
             },
-            {
-              name: "Customer ID",
-              value: `\`${customerId}\``,
-              inline: false,
-            },
-            {
-              name: "Session ID",
-              value: `\`${sessionId}\``,
-              inline: false,
-            },
+            { name: "Customer ID", value: customerId },
+            { name: "Checkout session", value: sessionId },
           ],
           timestamp: new Date().toISOString(),
         },
       ],
-    };
-
-    // Send the webhook request
-    const response = await fetch(webhookUrl, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(message),
-    });
-
-    if (!response.ok) {
-      // throw new Error(`Discord webhook request failed with status ${response.status}`);
-      console.error(
-        `<< Failed to send Discord notification for user ${userName}:`,
-        response,
-      );
-    }
-
-    console.log(
-      `<< Successfully sent Discord notification for user ${userName}`,
-    );
-  } catch (error) {
-    console.error("<< Failed to send Discord notification:", error);
-    // Don't rethrow the error to avoid interrupting the payment flow
-  }
+    }),
+    signal: AbortSignal.timeout(10000),
+  });
+  if (!response.ok) throw new Error("Discord did not accept the notification");
 }

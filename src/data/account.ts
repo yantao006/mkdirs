@@ -1,42 +1,21 @@
-import { SHOW_QUERY_LOGS } from "@/lib/constants";
+import { privateDocumentQuery } from "@/lib/private-documents";
 import type { Account } from "@/sanity.types";
-import { sanityFetch } from "@/sanity/lib/fetch";
+import { privateFetch } from "@/sanity/lib/private-client";
 
-export const getAccountByUserId = async (userId: string) => {
-  try {
-    // @sanity-typegen-ignore
-    const accountQry = `*[_type == "account" && userId == "${userId}"][0]`;
-    const account = await sanityFetch<Account>({
-      query: accountQry,
-      disableCache: true,
-    });
-    if (SHOW_QUERY_LOGS) {
-      console.log("getAccountByUserId, account:", account);
-    }
-    return account;
-  } catch (error) {
-    console.error("getAccountByUserId, error:", error);
-    return null;
-  }
-};
+export const getAccountByUserId = (userId: string) =>
+  privateFetch<Account | null>({
+    query: privateDocumentQuery("account", ["userId"]),
+    params: { value_userId: userId },
+  });
 
-export const getAccountByProviderAccountId = async (
+export const getAccountByProviderAccountId = (
   providerAccountId: string,
   provider: string,
-) => {
-  try {
-    // @sanity-typegen-ignore
-    const accountQry = `*[_type == "account" && providerAccountId == "${providerAccountId}" && provider == "${provider}"][0]`;
-    const account = await sanityFetch<Account>({
-      query: accountQry,
-      disableCache: true,
-    });
-    if (SHOW_QUERY_LOGS) {
-      console.log("getAccountByProviderAccountId, account:", account);
-    }
-    return account;
-  } catch (error) {
-    console.error("getAccountByProviderAccountId, error:", error);
-    return null;
-  }
-};
+) =>
+  privateFetch<Account | null>({
+    query: privateDocumentQuery("account", ["providerAccountId", "provider"]),
+    params: {
+      value_providerAccountId: providerAccountId,
+      value_provider: provider,
+    },
+  });

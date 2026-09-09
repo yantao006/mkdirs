@@ -13,10 +13,12 @@ export const metadata = constructMetadata({
 });
 
 export default async function BlogIndexPage({
-  searchParams,
+  searchParams: searchParamsPromise,
 }: {
-  searchParams?: { [key: string]: string | string[] | undefined };
+  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
+  const searchParams = (await searchParamsPromise) || {};
+
   console.log("BlogIndexPage, searchParams", searchParams);
   const { page } = searchParams as { [key: string]: string };
   const currentPage = page ? Number(page) : 1;

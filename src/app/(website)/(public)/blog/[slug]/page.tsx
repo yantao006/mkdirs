@@ -22,17 +22,18 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 export async function generateMetadata({
-  params,
+  params: paramsPromise,
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }): Promise<Metadata | undefined> {
+  const params = await paramsPromise;
+
   const post = await sanityFetch<BlogPostMetadataQueryResult>({
     query: blogPostMetadataQuery,
     params: { slug: params.slug },
   });
   if (!post) {
-    console.warn(`generateMetadata, post not found for slug: ${params.slug}`);
-    return;
+    notFound();
   }
 
   const imageProps = post?.image ? urlForImage(post?.image) : null;
@@ -46,10 +47,14 @@ export async function generateMetadata({
 }
 
 interface PostPageProps {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }
 
-export default async function PostPage({ params }: PostPageProps) {
+export default async function PostPage({
+  params: paramsPromise,
+}: PostPageProps) {
+  const params = await paramsPromise;
+
   const slug = params.slug;
   const queryParams = { slug };
   const post = await sanityFetch<BlogPostQueryResult>({

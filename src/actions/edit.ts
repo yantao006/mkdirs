@@ -11,12 +11,10 @@ import {
   getItemStatusLinkInWebsite,
   slugify,
 } from "@/lib/utils";
-import { sanityClient } from "@/sanity/lib/client";
+import { sanityClient } from "@/sanity/lib/private-client";
 import { revalidatePath } from "next/cache";
 
-// biome-ignore format: conditional type
-// biome-ignore lint/complexity/noBannedTypes: support item icon
-// type IconField = typeof SUPPORT_ITEM_ICON extends true ? { iconId: string } : {};
+// Icon fields follow the configured submission schema.
 
 // export type EditFormData = {
 //   id: string;
@@ -64,7 +62,6 @@ export async function edit(
     if (!user) {
       return { status: "error", message: "Unauthorized" };
     }
-    console.log("edit, user:", user);
 
     // console.log("edit, data:", formData);
     const {
@@ -76,12 +73,9 @@ export async function edit(
       imageId,
       tags,
       categories,
-      pricePlan,
-      planStatus,
       ...rest
     } = EditSchema.parse(formData);
     const iconId = "iconId" in rest ? rest.iconId : undefined;
-    console.log("edit, name:", name, "link:", link);
 
     // check if the user is the submitter of the item
     const item = await getItemById(id);
@@ -92,7 +86,7 @@ export async function edit(
       return { status: "error", message: "You are not allowed to do this!" };
     }
 
-    const slug = slugify(name);
+    const slug = item.slug?.current || slugify(name);
     const data = {
       _id: id,
       _type: "item",
@@ -107,10 +101,10 @@ export async function edit(
 
       // Free plan: update item leads to be unpublished and reviewed again
       // remain submitted if the plan status is submitted, otherwise set to pending
-      ...(pricePlan === PricePlans.FREE && {
+      ...(item.pricePlan === PricePlans.FREE && {
         publishDate: null,
         freePlanStatus:
-          planStatus === FreePlanStatus.SUBMITTING
+          item.freePlanStatus === FreePlanStatus.SUBMITTING
             ? FreePlanStatus.SUBMITTING
             : FreePlanStatus.PENDING,
       }),
@@ -147,24 +141,35 @@ export async function edit(
     };
 
     // console.log("edit, data:", data);
-    const res = await sanityClient.patch(id).set(data).commit();
+    const res = await sanityClient
+      .patch(id)
+      .ifRevisionId(item._rev)
+      .set(data)
+      .commit();
     if (!res) {
-      console.log("edit, fail");
       return { status: "error", message: "Failed to update item" };
     }
     // console.log("edit, success, res:", res);
 
-    // send notify email to admin and user
-    if (pricePlan === PricePlans.FREE) {
+    let notificationFailed = false;
+    // The edit is already persisted; notification failure is not a failed save.
+    if (
+      item.pricePlan === PricePlans.FREE &&
+      item.freePlanStatus !== FreePlanStatus.SUBMITTING
+    ) {
       const statusLink = getItemStatusLinkInWebsite(id);
       const reviewLink = getItemLinkInStudio(id);
-      sendNotifySubmissionEmail(
-        user.name,
-        user.email,
-        name,
-        statusLink,
-        reviewLink,
-      );
+      try {
+        await sendNotifySubmissionEmail(
+          user.name,
+          user.email,
+          name,
+          statusLink,
+          reviewLink,
+        );
+      } catch {
+        notificationFailed = true;
+      }
     }
 
     // Next.js has a Client-side Router Cache that stores the route segments in the user's browser for a time.
@@ -176,9 +181,13 @@ export async function edit(
     // redirect to the updated item, but not working, still showing the old item
     revalidatePath(`/edit/${id}`);
     revalidatePath(`/item/${slug}`);
-    return { status: "success", message: "Successfully updated item" };
+    return {
+      status: "success",
+      message: notificationFailed
+        ? "Item updated and queued for review, but email notification failed. Check your dashboard for status."
+        : "Successfully updated item",
+    };
   } catch (error) {
-    console.log("edit, error", error);
     return { status: "error", message: "Failed to update item" };
   }
 }

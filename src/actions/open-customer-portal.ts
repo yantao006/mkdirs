@@ -1,7 +1,7 @@
 "use server";
 
 import { currentUser } from "@/lib/auth";
-import { stripe } from "@/lib/stripe";
+import { getStripe } from "@/lib/stripe";
 import { absoluteUrl } from "@/lib/utils";
 import { redirect } from "next/navigation";
 
@@ -28,7 +28,7 @@ export async function openCustomerPortal(
     }
 
     if (stripeCustomerId) {
-      const stripeSession = await stripe.billingPortal.sessions.create({
+      const stripeSession = await getStripe().billingPortal.sessions.create({
         customer: stripeCustomerId,
         return_url: billingUrl,
       });

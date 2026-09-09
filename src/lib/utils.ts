@@ -1,4 +1,5 @@
 import { siteConfig } from "@/config/site";
+import { safeExternalUrl } from "@/lib/directory-query";
 import type { ItemInfo } from "@/types";
 import { type ClassValue, clsx } from "clsx";
 import type { ReadonlyURLSearchParams } from "next/navigation";
@@ -66,7 +67,8 @@ export function absoluteUrl(path: string) {
   return `${process.env.NEXT_PUBLIC_APP_URL}${path}`;
 }
 
-const baseUrl = process.env.NEXT_PUBLIC_APP_URL ??
+const baseUrl =
+  process.env.NEXT_PUBLIC_APP_URL ??
   `http://localhost:${process.env.PORT ?? 3000}`;
 
 export function getBaseUrl(): string {
@@ -78,10 +80,12 @@ export function getBaseUrl(): string {
  */
 export function checkValidSponsor(item: ItemInfo) {
   const now = new Date();
-  return item.pricePlan.toUpperCase() === PricePlans.SPONSOR.toUpperCase() 
-    && item.sponsorPlanStatus === "success"
-    && new Date(item.sponsorStartDate) <= now
-    && new Date(item.sponsorEndDate) >= now;
+  return (
+    item.pricePlan.toUpperCase() === PricePlans.SPONSOR.toUpperCase() &&
+    item.sponsorPlanStatus === "success" &&
+    new Date(item.sponsorStartDate) <= now &&
+    new Date(item.sponsorEndDate) >= now
+  );
 }
 
 /**
@@ -124,30 +128,8 @@ export function getItemStatusLinkInWebsite(id: string) {
  * NOTICE: when no affiliate link is provided, the link will be the same as the display link
  */
 export function getItemTargetLinkInWebsite(item: ItemInfo) {
-  if (item.affiliateLink) {
-    return item.affiliateLink;
-  }
-
-  try {
-    const utmParams = new URLSearchParams({
-      utm_source: siteConfig.utm.source,
-      utm_medium: siteConfig.utm.medium,
-      utm_campaign: siteConfig.utm.campaign,
-    }).toString();
-
-    // make sure the link is valid, has http:// or https:// as prefix
-    const url = new URL(item.link);
-    url.search = url.search ? `${url.search}&${utmParams}` : `?${utmParams}`;
-
-    return url.toString();
-  } catch (error) {
-    console.error(
-      "getItemTargetLinkInWebsite, invalid link:",
-      item.link,
-      error,
-    );
-    return item.link;
-  }
+  // No affiliate redirects or upstream attribution parameters in this product.
+  return safeExternalUrl(item.link) || "/";
 }
 
 ///////////////// methods below are not used in the app //////////////////

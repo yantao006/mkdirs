@@ -21,6 +21,10 @@ import { redirect } from "next/navigation";
 const clientWithToken = sanityClient.withConfig({ token });
 
 export async function GET(request: Request) {
+  if (!token)
+    return new Response("Preview service is awaiting configuration", {
+      status: 503,
+    });
   const { isValid, redirectTo = "/" } = await validatePreviewUrl(
     clientWithToken,
     request.url,
@@ -29,7 +33,12 @@ export async function GET(request: Request) {
     return new Response("invalid secret", { status: 401 });
   }
 
-  draftMode().enable();
+  (await draftMode()).enable();
 
-  redirect(redirectTo);
+  const target = new URL(redirectTo, process.env.NEXT_PUBLIC_APP_URL);
+  redirect(
+    target.origin === new URL(process.env.NEXT_PUBLIC_APP_URL).origin
+      ? `${target.pathname}${target.search}`
+      : "/",
+  );
 }

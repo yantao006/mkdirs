@@ -37,7 +37,7 @@ import type {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SmileIcon, Wand2Icon } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState, useTransition } from "react";
+import { useRef, useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
@@ -55,6 +55,7 @@ interface SubmitFormProps {
  */
 export function SubmitForm({ tagList, categoryList }: SubmitFormProps) {
   const router = useRouter();
+  const submissionRequest = useRef<string | null>(null);
   const [isPending, startTransition] = useTransition();
   const [isUploading, setIsUploading] = useState(false);
   const [isAIProcessing, setIsAIProcessing] = useState(false);
@@ -80,8 +81,9 @@ export function SubmitForm({ tagList, categoryList }: SubmitFormProps) {
   // submit form if data is valid
   const onSubmit = form.handleSubmit((data: SubmitFormData) => {
     // console.log('SubmitForm, onSubmit, data:', data);
+    submissionRequest.current ||= crypto.randomUUID();
     startTransition(async () => {
-      submit(data)
+      await submit(data, submissionRequest.current)
         .then((data) => {
           if (data.status === "success") {
             console.log("SubmitForm, success:", data.message);
@@ -154,8 +156,8 @@ export function SubmitForm({ tagList, categoryList }: SubmitFormProps) {
       if (data.categories) {
         form.setValue(
           "categories",
-          data.categories.map((category) =>
-            categoryList.find((c) => c.name === category)?._id,
+          data.categories.map(
+            (category) => categoryList.find((c) => c.name === category)?._id,
           ),
         );
       }
@@ -229,14 +231,22 @@ export function SubmitForm({ tagList, categoryList }: SubmitFormProps) {
                             <DialogHeader>
                               <DialogTitle>AI Autofill</DialogTitle>
                               <DialogDescription>
-                                Would you like AI to automatically fill in the form by the URL? It may take some time, so please wait patiently.
+                                Would you like AI to automatically fill in the
+                                form by the URL? It may take some time, so
+                                please wait patiently.
                               </DialogDescription>
                             </DialogHeader>
                             <div className="flex justify-end gap-2">
-                              <Button variant="outline" onClick={() => setDialogOpen(false)}>
+                              <Button
+                                variant="outline"
+                                onClick={() => setDialogOpen(false)}
+                              >
                                 Cancel
                               </Button>
-                              <Button onClick={handleAIFetch} disabled={isAIProcessing}>
+                              <Button
+                                onClick={handleAIFetch}
+                                disabled={isAIProcessing}
+                              >
                                 {isAIProcessing ? (
                                   <>
                                     <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />

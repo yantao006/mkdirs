@@ -1,5 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Resolve missing content before streaming headers, so all clients receive 404.
+  htmlLimitedBots: /.*/,
   // Configure `pageExtensions` to include markdown and MDX files
   // https://nextjs.org/docs/pages/building-your-application/configuring/mdx
   // pageExtensions: ['js', 'jsx', 'md', 'mdx', 'ts', 'tsx'],

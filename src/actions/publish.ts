@@ -2,7 +2,8 @@
 
 import { getItemById } from "@/data/item";
 import { currentUser } from "@/lib/auth";
-import { sanityClient } from "@/sanity/lib/client";
+import { getPublishable } from "@/lib/submission";
+import { sanityClient } from "@/sanity/lib/private-client";
 
 export type ServerActionResponse = {
   status: "success" | "error";
@@ -10,7 +11,6 @@ export type ServerActionResponse = {
 };
 
 export async function publish(itemId: string): Promise<ServerActionResponse> {
-  console.log("publish, itemId:", itemId);
   try {
     const user = await currentUser();
     if (!user) {
@@ -26,6 +26,13 @@ export async function publish(itemId: string): Promise<ServerActionResponse> {
       return { status: "error", message: "You are not allowed to do this!" };
     }
 
+    if (!getPublishable(item)) {
+      return {
+        status: "error",
+        message: "This submission has not been approved or paid.",
+      };
+    }
+
     const result = await sanityClient
       .patch(itemId)
       .set({
@@ -39,7 +46,6 @@ export async function publish(itemId: string): Promise<ServerActionResponse> {
     }
     return { status: "success", message: "Successfully published!" };
   } catch (error) {
-    console.log("publish, error", error);
     return { status: "error", message: "Failed to publish item!" };
   }
 }

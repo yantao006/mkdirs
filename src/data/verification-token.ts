@@ -1,63 +1,27 @@
-import { SHOW_QUERY_LOGS } from "@/lib/constants";
+import { privateDocumentQuery } from "@/lib/private-documents";
 import type { VerificationToken } from "@/sanity.types";
-import { sanityFetch } from "@/sanity/lib/fetch";
+import { privateFetch } from "@/sanity/lib/private-client";
 
-export const getVerificationTokenByEmail = async (email: string) => {
-  try {
-    // @sanity-typegen-ignore
-    const verTokenQry = `*[_type == "verificationToken" && identifier == "${email}"][0]`;
-    const verToken = await sanityFetch<VerificationToken>({
-      query: verTokenQry,
-      disableCache: true,
-    });
-    if (SHOW_QUERY_LOGS) {
-      console.log("getVerificationTokenByEmail, verToken:", verToken);
-    }
-    return verToken;
-  } catch (error) {
-    console.error("getVerificationTokenByEmail, error:", error);
-    return null;
-  }
-};
+export const getVerificationTokenByEmail = (email: string) =>
+  privateFetch<VerificationToken | null>({
+    query: privateDocumentQuery("verificationToken", ["identifier"]),
+    params: { value_identifier: email.trim().toLowerCase() },
+  });
 
-export const getVerificationTokenByToken = async (token: string) => {
-  try {
-    // @sanity-typegen-ignore
-    const verTokenQry = `*[_type == "verificationToken" && token == "${token}"][0]`;
-    const verToken = await sanityFetch<VerificationToken>({
-      query: verTokenQry,
-      disableCache: true,
-    });
-    if (SHOW_QUERY_LOGS) {
-      console.log("getVerificationTokenByToken, verToken:", verToken);
-    }
-    return verToken;
-  } catch (error) {
-    console.error("getVerificationTokenByToken, error:", error);
-    return null;
-  }
-};
+export const getVerificationTokenByToken = (token: string) =>
+  privateFetch<VerificationToken | null>({
+    query: privateDocumentQuery("verificationToken", ["token"]),
+    params: { value_token: token },
+  });
 
-export const getVerificationTokenByIdentifierAndToken = async (
+export const getVerificationTokenByIdentifierAndToken = (
   identifier: string,
   token: string,
-) => {
-  try {
-    // @sanity-typegen-ignore
-    const verTokenQry = `*[_type == "verificationToken" && identifier == "${identifier}" && token == "${token}"][0]`;
-    const verToken = await sanityFetch<VerificationToken>({
-      query: verTokenQry,
-      disableCache: true,
-    });
-    if (SHOW_QUERY_LOGS) {
-      console.log(
-        "getVerificationTokenByIdentifierAndToken, verToken:",
-        verToken,
-      );
-    }
-    return verToken;
-  } catch (error) {
-    console.error("getVerificationTokenByIdentifierAndToken, error:", error);
-    return null;
-  }
-};
+) =>
+  privateFetch<VerificationToken | null>({
+    query: privateDocumentQuery("verificationToken", ["identifier", "token"]),
+    params: {
+      value_identifier: identifier.trim().toLowerCase(),
+      value_token: token,
+    },
+  });

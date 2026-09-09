@@ -2,8 +2,8 @@
 
 import { getUserById } from "@/data/user";
 import { currentUser } from "@/lib/auth";
-import type { UserPasswordData } from "@/lib/schemas";
-import { sanityClient } from "@/sanity/lib/client";
+import { type UserPasswordData, UserPasswordSchema } from "@/lib/schemas";
+import { sanityClient } from "@/sanity/lib/private-client";
 import bcrypt from "bcryptjs";
 import { revalidatePath } from "next/cache";
 
@@ -16,6 +16,10 @@ export async function updateUserPassword(
   values: UserPasswordData,
 ): Promise<ServerActionResponse> {
   try {
+    const parsed = UserPasswordSchema.safeParse(values);
+    if (!parsed.success)
+      return { status: "error", message: "Invalid password fields" };
+    const data = parsed.data;
     const user = await currentUser();
     if (!user) {
       return { status: "error", message: "Unauthorized" };
@@ -27,9 +31,9 @@ export async function updateUserPassword(
     }
 
     // password change needs verification
-    if (values.password && values.newPassword && dbUser.password) {
+    if (!user.isOAuth && data.password && data.newPassword && dbUser.password) {
       const passwordsMatch = await bcrypt.compare(
-        values.password,
+        data.password,
         dbUser.password,
       );
 
@@ -37,21 +41,19 @@ export async function updateUserPassword(
         return { status: "error", message: "Incorrect password!" };
       }
 
-      const hashedPassword = await bcrypt.hash(values.newPassword, 10);
+      const hashedPassword = await bcrypt.hash(data.newPassword, 10);
       const updatedUser = await sanityClient
         .patch(dbUser._id)
         .set({
           password: hashedPassword,
         })
         .commit();
-      console.log("updateUserPassword, user:", updatedUser);
 
       revalidatePath("/settings");
       return { status: "success", message: "User password updated!" };
     }
     return { status: "error", message: "No password provided" };
   } catch (error) {
-    console.log("updateUserPassword, error", error);
     return {
       status: "error",
       message: "Failed to update user password!",

@@ -19,10 +19,12 @@ export const metadata = constructMetadata({
 });
 
 export default async function HomePage({
-  searchParams,
+  searchParams: searchParamsPromise,
 }: {
-  searchParams?: { [key: string]: string | string[] | undefined };
+  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
+  const searchParams = (await searchParamsPromise) || {};
+
   console.log("HomePage, searchParams", searchParams);
 
   // Option 1: use these code if you want to show sponsor items in the item grid

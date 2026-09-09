@@ -1,56 +1,48 @@
 import { PricePlans } from "@/lib/submission";
 import type { PriceConfig } from "@/types";
 
+// Paid amounts are read from this product's configured Stripe prices on the server.
+// Do not publish the template author's prices or operating promises as our policy.
 export const priceConfig: PriceConfig = {
   plans: [
     {
       title: PricePlans.FREE,
-      description: "For Beginners",
+      description: "Submit for review",
       benefits: [
-        "Get 3 dofollow links to boost your SEO",
-        "Permanent link with backlink maintenance",
-        "Reviewed and listed within 72 hours",
-        "Publish your product the day you want",
+        "Submit a resource to the directory",
+        "Manage your submission from your dashboard",
+        "Publish after approval",
       ],
-      limitations: [
-        "Backlink to our site is required",
-        "No customer support",
-      ],
+      limitations: ["Review is required before publication"],
       price: 0,
       priceSuffix: "",
       stripePriceId: null,
     },
     {
       title: PricePlans.PRO,
-      description: "For Pro Users",
+      description: "Paid submission",
       benefits: [
-        "Get >= 3 dofollow links to boost your SEO",
-        "List right now, publish whenever you want",
-        "Permanent link, no backlink required",
-        "Featured placement at the top of listings",
-        "Share through social media and newsletters",
-        "Premium customer support",
+        "Complete payment through Stripe",
+        "Featured directory placement after payment",
+        "Choose when to publish after successful payment",
       ],
       limitations: [],
-      price: 9.9,
+      price: null,
       priceSuffix: "",
-      stripePriceId: process.env.NEXT_PUBLIC_STRIPE_PRO_PRICE_ID,
+      stripePriceId: process.env.NEXT_PUBLIC_STRIPE_PRO_PRICE_ID || null,
     },
     {
       title: PricePlans.SPONSOR,
-      description: "For Sponsors",
+      description: "Sponsored placement",
       benefits: [
-        "Everything in Pro plan",
-        "Promote your product on almost every page",
-        "Available for all kinds of product",
-        "Only one advertisement per period",
-        "Schedule your advertising period",
-        "Premium customer support",
+        "Paid submission features",
+        "Scheduled sponsored placement",
+        "Manage the resource from your dashboard",
       ],
       limitations: [],
-      price: 19.9,
-      priceSuffix: "/ week",
-      stripePriceId: process.env.NEXT_PUBLIC_STRIPE_SPONSOR_PRICE_ID,
+      price: null,
+      priceSuffix: "",
+      stripePriceId: process.env.NEXT_PUBLIC_STRIPE_SPONSOR_PRICE_ID || null,
     },
   ],
 };

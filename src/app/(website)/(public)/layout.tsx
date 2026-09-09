@@ -3,6 +3,9 @@ import { Footer } from "@/components/layout/footer";
 import { Navbar } from "@/components/layout/navbar";
 import { marketingConfig } from "@/config/marketing";
 
+// Public content is fetched on demand; never prerender request-dependent filters.
+export const dynamic = "force-dynamic";
+
 interface MarketingLayoutProps {
   children: React.ReactNode;
 }

@@ -49,7 +49,7 @@ export const NotifySubmissionToUserEmail = ({
         <Container style={container}>
           <Section style={box}>
             <Img
-              src={`${baseUrl}/logo.png`}
+              src={`${baseUrl}/favicon-32x32.png`}
               width="32"
               height="32"
               alt="Logo"
@@ -58,8 +58,8 @@ export const NotifySubmissionToUserEmail = ({
             <Text style={paragraph}>Hi {userName},</Text>
             <Text style={paragraph}>Thank you for your submission.</Text>
             <Text style={paragraph}>
-              Your product named <b>{itemName}</b> will be reviewed in the next
-              48 hours before listing on our directory.
+              Your resource named <b>{itemName}</b> is in the review queue.
+              After approval, you can publish it from your dashboard.
             </Text>
             <Text style={paragraph}>
               You can view your submission status by clicking the button below:
@@ -94,10 +94,6 @@ export const NotifySubmissionToUserEmail = ({
                 &nbsp;&nbsp; All Rights Reserved.
               </span>
               <span style={footerRight}>
-                <Link style={anchor} href={siteConfig.links.twitter}>
-                  Twitter
-                </Link>
-                &nbsp;&nbsp;&nbsp;&nbsp;
                 <Link style={anchor} href={siteConfig.links.github}>
                   GitHub
                 </Link>
@@ -111,9 +107,9 @@ export const NotifySubmissionToUserEmail = ({
 };
 
 NotifySubmissionToUserEmail.PreviewProps = {
-  userName: "Javayhu",
-  itemName: "Mkdirs",
-  statusLink: "https://demo.mkdirs.com",
+  userName: "Example member",
+  itemName: "Example resource",
+  statusLink: "https://example.invalid/dashboard",
 } as NotifySubmissionToUserEmailProps;
 
 export default NotifySubmissionToUserEmail;

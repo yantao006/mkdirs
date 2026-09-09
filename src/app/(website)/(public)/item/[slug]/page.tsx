@@ -6,6 +6,7 @@ import BackButton from "@/components/shared/back-button";
 import { UserAvatar } from "@/components/shared/user-avatar";
 import { Button } from "@/components/ui/button";
 import { siteConfig } from "@/config/site";
+import { safeExternalUrl } from "@/lib/directory-query";
 import { urlForIcon, urlForImage } from "@/lib/image";
 import { constructMetadata } from "@/lib/metadata";
 import { cn, getItemTargetLinkInWebsite, getLocaleDate } from "@/lib/utils";
@@ -27,18 +28,17 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 export async function generateMetadata({
-  params,
+  params: paramsPromise,
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }): Promise<Metadata | undefined> {
+  const params = await paramsPromise;
+
   const item = await sanityFetch<ItemInfoBySlugQueryResult>({
     query: itemInfoBySlugQuery,
     params: { slug: params.slug },
   });
-  if (!item) {
-    console.warn(`generateMetadata, item not found for slug: ${params.slug}`);
-    return;
-  }
+  if (!item || !safeExternalUrl(item.link)) notFound();
 
   const imageProps = item?.image ? urlForImage(item?.image) : null;
   return constructMetadata({
@@ -50,10 +50,14 @@ export async function generateMetadata({
 }
 
 interface ItemPageProps {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }
 
-export default async function ItemPage({ params }: ItemPageProps) {
+export default async function ItemPage({
+  params: paramsPromise,
+}: ItemPageProps) {
+  const params = await paramsPromise;
+
   // if you do not support sponsor item, you can use this code
   // const item = await sanityFetch<ItemFullInfo>({
   //   query: itemFullInfoBySlugQuery,
@@ -71,8 +75,8 @@ export default async function ItemPage({ params }: ItemPageProps) {
     }),
   ]);
 
-  if (!item) {
-    console.error("ItemPage, item not found");
+  if (!item || !safeExternalUrl(item.link)) {
+    console.error("ItemPage, item not found or official URL invalid");
     return notFound();
   }
 
@@ -135,6 +139,7 @@ export default async function ItemPage({ params }: ItemPageProps) {
             <Button size="lg" variant="default" asChild className="group">
               <Link
                 href={itemLink}
+                rel="noopener noreferrer"
                 target="_blank"
                 prefetch={false}
                 className="flex items-center justify-center space-x-2"
@@ -152,6 +157,7 @@ export default async function ItemPage({ params }: ItemPageProps) {
           <div className="relative group overflow-hidden rounded-lg aspect-[16/9]">
             <Link
               href={`${itemLink}`}
+              rel="noopener noreferrer"
               target="_blank"
               prefetch={false}
               className="relative block w-full h-full"
@@ -209,7 +215,7 @@ export default async function ItemPage({ params }: ItemPageProps) {
               <div className="bg-muted/50 rounded-lg p-6">
                 <h2 className="text-lg font-semibold mb-4">Information</h2>
                 <ul className="space-y-4 text-sm">
-                {item.submitter && (
+                  {item.submitter && (
                     <li className="flex justify-between">
                       <span className="text-muted-foreground">Publisher</span>
                       <div className="flex items-center gap-2">
@@ -238,6 +244,7 @@ export default async function ItemPage({ params }: ItemPageProps) {
                     <span className="text-muted-foreground">Website</span>
                     <Link
                       href={itemLink}
+                      rel="noopener noreferrer"
                       target="_blank"
                       prefetch={false}
                       className="font-medium link-underline line-clamp-1"
@@ -309,7 +316,11 @@ export default async function ItemPage({ params }: ItemPageProps) {
           </div>
 
           <div className="mt-4">
-            <ItemGrid items={item.related} sponsorItems={sponsorItems} showSponsor={false} />
+            <ItemGrid
+              items={item.related}
+              sponsorItems={sponsorItems}
+              showSponsor={false}
+            />
           </div>
         </div>
       )}

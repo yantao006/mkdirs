@@ -3,19 +3,22 @@ import SubmissionCardInPlanPage from "@/components/payment/submission-card-in-pl
 import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { siteConfig } from "@/config/site";
+import { getPricingPlans } from "@/data/pricing";
 import { currentUser } from "@/lib/auth";
 import { constructMetadata } from "@/lib/metadata";
-import { sanityFetch } from "@/sanity/lib/fetch";
+import { privateFetch as sanityFetch } from "@/sanity/lib/private-client";
 import { itemByIdQuery } from "@/sanity/lib/queries";
 import type { ItemInfo } from "@/types";
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 
 export async function generateMetadata({
-  params,
+  params: paramsPromise,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }): Promise<Metadata | undefined> {
+  const params = await paramsPromise;
+
   return constructMetadata({
     title: "Submit your product (2/3)",
     description: "Submit your product (2/3) Choose pricing plan",
@@ -23,7 +26,11 @@ export async function generateMetadata({
   });
 }
 
-export default async function PlanPage({ params }: { params: { id: string } }) {
+export default async function PlanPage({
+  params: paramsPromise,
+}: { params: Promise<{ id: string }> }) {
+  const params = await paramsPromise;
+
   const user = await currentUser();
   if (!user) {
     console.error("PlanPage, user not found");
@@ -35,7 +42,6 @@ export default async function PlanPage({ params }: { params: { id: string } }) {
   const item = await sanityFetch<ItemInfo>({
     query: itemByIdQuery,
     params: { id: id },
-    disableCache: true,
   });
 
   if (!item) {
@@ -59,7 +65,7 @@ export default async function PlanPage({ params }: { params: { id: string } }) {
       <Separator className="w-full" />
 
       <div className="w-full p-4 my-4">
-        <PricingPlans item={item} />
+        <PricingPlans item={item} plans={await getPricingPlans()} />
       </div>
     </Card>
   );

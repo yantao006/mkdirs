@@ -1,133 +1,161 @@
-import { getOrderByUserIdAndItemId } from "@/data/order";
+import { getItemById } from "@/data/item";
 import { getUserById } from "@/data/user";
 import { sendMessageToDiscord } from "@/lib/discord";
 import { sendPaymentSuccessEmail } from "@/lib/mail";
-import { stripe } from "@/lib/stripe";
+import {
+  allowedPrice,
+  paymentOrderId,
+  stripeAmount,
+} from "@/lib/payment-policy";
+import { serviceConfigured } from "@/lib/service-config";
+import { getStripe } from "@/lib/stripe";
 import { PricePlans, ProPlanStatus, SponsorPlanStatus } from "@/lib/submission";
-import { getItemLinkInWebsite } from "@/lib/utils";
-import { sanityClient } from "@/sanity/lib/client";
-import { headers } from "next/headers";
+import { readBoundedBody } from "@/lib/upload";
+import { absoluteUrl } from "@/lib/utils";
+import { sanityClient } from "@/sanity/lib/private-client";
 import type Stripe from "stripe";
 
-/**
- * Stripe webhook handler
- * This file handles webhook events from Stripe. It verifies the signature
- * of each request to ensure that the request is coming from Stripe. It also
- * handles the checkout.session.completed event type by creating a new purchase record in the database.
- *
- * https://github.com/mickasmt/next-saas-stripe-starter/blob/main/app/api/webhooks/stripe/route.ts
- * https://github.com/javayhu/lms-studio-antonio/blob/main/app/api/webhook/route.ts
- */
+type PaymentRecord = {
+  _id: string;
+  emailNotifiedAt?: string;
+  discordNotifiedAt?: string;
+};
+
 export async function POST(req: Request) {
-  const body = await req.text();
-  const signature = headers().get("Stripe-Signature") as string;
-
+  if (!serviceConfigured("payment"))
+    return new Response("Payments awaiting configuration", { status: 503 });
+  const signature = req.headers.get("stripe-signature");
+  if (!signature) return new Response("Missing signature", { status: 400 });
+  const stripe = getStripe();
   let event: Stripe.Event;
-
   try {
-    event = stripe.webhooks.constructEvent(
+    const body = new TextDecoder().decode(
+      await readBoundedBody(req, 1024 * 1024),
+    );
+    event = await stripe.webhooks.constructEventAsync(
       body,
       signature,
       process.env.STRIPE_WEBHOOK_SECRET,
     );
-  } catch (error) {
-    console.error("Stripe webhook error:", error);
-    return new Response(`Webhook Error: ${error.message}`, { status: 400 });
+  } catch {
+    return new Response("Invalid webhook signature or payload", {
+      status: 400,
+    });
   }
-
-  // console.log('stripe webhook event:', event);
-  console.log("stripe webhook event.type:", event.type);
-
-  if (event.type === "checkout.session.completed") {
-    console.log("checkout.session.completed event");
-    const session = event.data.object as Stripe.Checkout.Session;
-    const customerId = session.customer as string;
-    const amount = session.amount_total ? session.amount_total / 100 : 0;
-
-    const userId = session?.metadata?.userId;
-    const itemId = session?.metadata?.itemId;
-    const priceId = session?.metadata?.priceId;
-    const pricePlan = session?.metadata?.pricePlan;
-    // console.log('session:', session);
-    console.log(
-      `checkout.session.completed, userId: ${userId}, itemId: ${itemId}, priceId: ${priceId}, pricePlan: ${pricePlan}`,
-    );
-
-    // check if order already exists, if so, return
-    const order = await getOrderByUserIdAndItemId(userId, itemId);
-    if (order) {
-      console.log(
-        `checkout.session.completed, order already exists: ${order._id}`,
-      );
-      return new Response(null, { status: 200 });
+  if (
+    event.type !== "checkout.session.completed" &&
+    event.type !== "checkout.session.async_payment_succeeded"
+  ) {
+    return new Response(null, { status: 200 });
+  }
+  const session = event.data.object as Stripe.Checkout.Session;
+  // A completed checkout may still be awaiting an asynchronous payment.
+  if (session.mode !== "payment" || session.payment_status !== "paid")
+    return new Response(null, { status: 200 });
+  try {
+    const { userId, itemId, priceId, pricePlan } = session.metadata || {};
+    if (!userId || !itemId || !allowedPrice(pricePlan, priceId)) {
+      return new Response("Unrecognized product checkout", { status: 400 });
     }
-
-    const user = await getUserById(session?.metadata?.userId);
-    // console.log('user:', user);
-
-    if (user) {
-      const result = await sanityClient.create({
-        _type: "order",
-        user: {
-          _type: "reference",
-          _ref: user._id,
-        },
-        item: {
-          _type: "reference",
-          _ref: itemId,
-        },
-        status: "success",
-        date: new Date().toISOString(),
+    const [user, item, lines] = await Promise.all([
+      getUserById(userId),
+      getItemById(itemId),
+      stripe.checkout.sessions.listLineItems(session.id, { limit: 2 }),
+    ]);
+    const customerId =
+      typeof session.customer === "string"
+        ? session.customer
+        : session.customer?.id;
+    if (
+      !user ||
+      !item ||
+      item.submitter?._ref !== user._id ||
+      user.stripeCustomerId !== customerId ||
+      lines.has_more ||
+      lines.data.length !== 1 ||
+      lines.data[0].price?.id !== priceId ||
+      lines.data[0].quantity !== 1
+    ) {
+      return new Response("Checkout ownership or price mismatch", {
+        status: 409,
       });
-
-      if (!result) {
-        console.log("checkout.session.completed, create order failed");
-        return new Response(null, { status: 500 });
-      }
-
-      // update order & status of item
-      const res = await sanityClient
-        .patch(itemId)
-        .set({
-          paid: true,
-          featured: true,
-          pricePlan: pricePlan, // pro or sponsor
-          sponsor: pricePlan === PricePlans.SPONSOR,
-          proPlanStatus:
-            pricePlan === PricePlans.PRO
-              ? ProPlanStatus.SUCCESS
-              : ProPlanStatus.SUBMITTING,
-          sponsorPlanStatus:
-            pricePlan === PricePlans.SPONSOR
-              ? SponsorPlanStatus.SUCCESS
-              : SponsorPlanStatus.SUBMITTING,
-          order: {
-            _type: "reference",
-            _ref: result._id,
-          },
-        })
-        .commit();
-
-      if (!res) {
-        console.log("checkout.session.completed, update item failed");
-        return new Response(null, { status: 500 });
-      }
-
-      // send thank you email to user
-      console.log(`checkout.session.completed, item: ${JSON.stringify(res)}`);
-      const itemLink = getItemLinkInWebsite(res.slug.current);
-      console.log(`checkout.session.completed, userName: ${user.name}, 
-        userEmail: ${user.email}, 
-        itemLink: ${itemLink}`);
-      await sendPaymentSuccessEmail(user.name, user.email, itemLink);
-
-      // send message to discord
-      await sendMessageToDiscord(session.id, customerId, user.name, amount);
-    } else {
-      console.log("checkout.session.completed, user not found");
-      return new Response(null, { status: 404 });
     }
+    const orderId = paymentOrderId(session.id);
+    let order: PaymentRecord | undefined =
+      await sanityClient.getDocument<PaymentRecord>(orderId);
+    if (!order) {
+      if (item.paid)
+        return new Response(
+          "Item already paid; operator reconciliation required",
+          { status: 409 },
+        );
+      // Deterministic create plus revision-guarded item patch are one atomic transaction.
+      // Retries cannot create a second order or partially mark an item paid.
+      await sanityClient
+        .transaction()
+        .create({
+          _id: orderId,
+          _type: "order",
+          user: { _type: "reference", _ref: user._id },
+          item: { _type: "reference", _ref: item._id },
+          status: "success",
+          date: new Date().toISOString(),
+          checkoutSessionId: session.id,
+          stripeEventId: event.id,
+          amountMinor: session.amount_total,
+          currency: session.currency,
+        })
+        .patch(itemId, (patch) =>
+          patch.ifRevisionId(item._rev).set({
+            paid: true,
+            featured: true,
+            pricePlan,
+            sponsor: pricePlan === PricePlans.SPONSOR,
+            proPlanStatus:
+              pricePlan === PricePlans.PRO
+                ? ProPlanStatus.SUCCESS
+                : ProPlanStatus.SUBMITTING,
+            sponsorPlanStatus:
+              pricePlan === PricePlans.SPONSOR
+                ? SponsorPlanStatus.SUCCESS
+                : SponsorPlanStatus.SUBMITTING,
+            order: { _type: "reference", _ref: orderId },
+          }),
+        )
+        .commit();
+      order = { _id: orderId };
+    }
+    // Notification failure never rolls back payment. Stripe retries can finish the pending delivery.
+    if (!order.emailNotifiedAt) {
+      await sendPaymentSuccessEmail(
+        user.name,
+        user.email,
+        absoluteUrl(`/publish/${encodeURIComponent(item._id)}`),
+      );
+      await sanityClient
+        .patch(orderId)
+        .set({ emailNotifiedAt: new Date().toISOString() })
+        .commit();
+    }
+    if (process.env.DISCORD_WEBHOOK_URL && !order.discordNotifiedAt) {
+      await sendMessageToDiscord(
+        session.id,
+        customerId,
+        user.name,
+        stripeAmount(session.amount_total || 0, session.currency),
+        session.currency,
+      );
+      await sanityClient
+        .patch(orderId)
+        .set({ discordNotifiedAt: new Date().toISOString() })
+        .commit();
+    }
+    return new Response(null, { status: 200 });
+  } catch {
+    // No upstream objects, email addresses, tokens, or provider payloads in responses/logs.
+    return new Response(
+      "Payment processing or notification pending; retry required",
+      { status: 503 },
+    );
   }
-
-  return new Response(null, { status: 200 });
 }

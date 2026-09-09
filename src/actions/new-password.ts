@@ -3,7 +3,7 @@
 import { getPasswordResetTokenByToken } from "@/data/password-reset-token";
 import { getUserByEmail } from "@/data/user";
 import { NewPasswordSchema } from "@/lib/schemas";
-import { sanityClient } from "@/sanity/lib/client";
+import { sanityClient } from "@/sanity/lib/private-client";
 import bcrypt from "bcryptjs";
 import type * as z from "zod";
 
@@ -44,13 +44,23 @@ export async function newPassword(
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);
-  await sanityClient
-    .patch(existingUser._id)
-    .set({
-      password: hashedPassword,
-    })
-    .commit();
-
-  await sanityClient.delete(existingToken._id);
-  return { status: "success", message: "Password updated!" };
+  try {
+    await sanityClient
+      .transaction()
+      .patch(existingToken._id, (patch) =>
+        patch.ifRevisionId(existingToken._rev).set({ consumed: true }),
+      )
+      .patch(existingUser._id, (patch) =>
+        patch.ifRevisionId(existingUser._rev).set({ password: hashedPassword }),
+      )
+      .delete(existingToken._id)
+      .commit();
+    return { status: "success", message: "Password updated!" };
+  } catch {
+    return {
+      status: "error",
+      message:
+        "This reset link was already used or the account changed. Request a new link.",
+    };
+  }
 }

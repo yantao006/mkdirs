@@ -6,7 +6,7 @@ import type {
   CategoryListQueryResult,
   TagListQueryResult,
 } from "@/sanity.types";
-import { sanityFetch } from "@/sanity/lib/fetch";
+import { privateFetch as sanityFetch } from "@/sanity/lib/private-client";
 import {
   categoryListQuery,
   itemFullInfoByIdQuery,
@@ -17,10 +17,12 @@ import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 
 export async function generateMetadata({
-  params,
+  params: paramsPromise,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }): Promise<Metadata | undefined> {
+  const params = await paramsPromise;
+
   return constructMetadata({
     title: "Edit product information",
     description: "Edit product information",
@@ -29,10 +31,14 @@ export async function generateMetadata({
 }
 
 interface EditPageProps {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
-export default async function EditPage({ params }: EditPageProps) {
+export default async function EditPage({
+  params: paramsPromise,
+}: EditPageProps) {
+  const params = await paramsPromise;
+
   const user = await currentUser();
   if (!user) {
     console.error("EditPage, user not found");

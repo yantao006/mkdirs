@@ -34,8 +34,8 @@ export function UserNameForm() {
 
   const onSubmit = form.handleSubmit((values) => {
     console.log("UserNameForm, values:", values);
-    startTransition(() => {
-      updateUserName(values)
+    startTransition(async () => {
+      await updateUserName(values)
         .then((data) => {
           if (data.status === "error") {
             console.log("UserNameForm, error:", data.message);
@@ -72,11 +72,7 @@ export function UserNameForm() {
             placeholder="Enter your name, max 32 characters"
             onChange={(e) => checkUpdate(e.target.value)}
           />
-          <Button
-            type="submit"
-            disabled={isPending || !updated}
-            className=""
-          >
+          <Button type="submit" disabled={isPending || !updated} className="">
             {isPending ? (
               <div className="flex items-center gap-2">
                 <Icons.spinner className="size-4 animate-spin" />

@@ -1,12 +1,13 @@
 "use server";
 
 import { getUserByEmail } from "@/data/user";
+import { privateIdentityId } from "@/lib/identity-id";
 import { sendVerificationEmail } from "@/lib/mail";
 import { RegisterSchema } from "@/lib/schemas";
+import { serviceConfigured } from "@/lib/service-config";
 import { generateVerificationToken } from "@/lib/tokens";
-import { sanityClient } from "@/sanity/lib/client";
+import { sanityClient } from "@/sanity/lib/private-client";
 import { UserRole } from "@/types/user-role";
-import { uuid } from "@sanity/uuid";
 import bcrypt from "bcryptjs";
 import type * as z from "zod";
 
@@ -18,6 +19,13 @@ export type ServerActionResponse = {
 export async function register(
   values: z.infer<typeof RegisterSchema>,
 ): Promise<ServerActionResponse> {
+  if (!serviceConfigured("accounts") || !serviceConfigured("email")) {
+    return {
+      status: "error",
+      message:
+        "Registration is awaiting this site's account and email configuration.",
+    };
+  }
   const validatedFields = RegisterSchema.safeParse(values);
 
   if (!validatedFields.success) {
@@ -32,22 +40,37 @@ export async function register(
     return { status: "error", message: "Email already being used" };
   }
 
-  await sanityClient.create({
-    _type: "user",
-    _id: `user.${uuid()}`,
-    name,
-    email,
-    role: UserRole.USER,
-    password: hashedPassword,
-  });
-
-  const verificationToken = await generateVerificationToken(email);
-  await sendVerificationEmail(
-    verificationToken.identifier,
-    verificationToken.token,
-  );
-  return {
-    status: "success",
-    message: "Please check your email for verification",
-  };
+  try {
+    await sanityClient.create({
+      _type: "user",
+      _id: await privateIdentityId("user", email.trim().toLowerCase()),
+      name,
+      email: email.trim().toLowerCase(),
+      role: UserRole.USER,
+      password: hashedPassword,
+    });
+  } catch {
+    return {
+      status: "error",
+      message:
+        "Unable to create the account. If you already registered, sign in to resend verification.",
+    };
+  }
+  try {
+    const verificationToken = await generateVerificationToken(email);
+    await sendVerificationEmail(
+      verificationToken.identifier,
+      verificationToken.token,
+    );
+    return {
+      status: "success",
+      message: "Please check your email for verification",
+    };
+  } catch {
+    return {
+      status: "error",
+      message:
+        "Account saved, but the email provider did not accept verification. Try signing in to resend it.",
+    };
+  }
 }

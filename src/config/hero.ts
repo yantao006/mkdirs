@@ -1,15 +1,8 @@
 import type { HeroConfig } from "@/types";
 
 export const heroConfig: HeroConfig = {
-  title: {
-    first: "The Best",
-    second: "Directory Website Template",
-  },
+  title: { first: "Find your next", second: "useful tool" },
   subtitle:
-    "This is a demo directory website built with Mkdirs",
-  label: {
-    text: "Introducing Mkdirs on",
-    href: "https://x.com/javayhu",
-    icon: "twitter",
-  },
+    "Explore developer tools and web resources. A small, curated directory to help you build, learn, and test.",
+  label: { text: "", href: "/", icon: "search" },
 };

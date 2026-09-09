@@ -3,6 +3,7 @@ import { PricingPlans } from "@/components/dashboard/pricing-plans";
 import { PricingFaq } from "@/components/pricing/pricing-faq";
 import { HeaderSection } from "@/components/shared/header-section";
 import { siteConfig } from "@/config/site";
+import { getPricingPlans } from "@/data/pricing";
 import { constructMetadata } from "@/lib/metadata";
 
 export const metadata = constructMetadata({
@@ -12,6 +13,7 @@ export const metadata = constructMetadata({
 });
 
 export default async function PricingPage() {
+  const plans = await getPricingPlans();
   return (
     <Container className="mt-8 pb-16">
       <div className="w-full flex flex-col gap-16">
@@ -24,7 +26,7 @@ export default async function PricingPage() {
           />
 
           <div className="w-full mx-auto">
-            <PricingPlans />
+            <PricingPlans plans={plans} />
           </div>
 
           {/* add tips only for Mkdirs demo directory website */}

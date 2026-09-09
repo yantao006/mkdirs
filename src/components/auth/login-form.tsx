@@ -48,8 +48,8 @@ export const LoginForm = ({ className }: { className?: string }) => {
     setError("");
     setSuccess("");
 
-    startTransition(() => {
-      login(values, callbackUrl)
+    startTransition(async () => {
+      await login(values, callbackUrl)
         .then((data) => {
           // console.log('login, data:', data);
           if (data?.status === "error") {

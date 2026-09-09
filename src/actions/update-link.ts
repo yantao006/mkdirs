@@ -4,7 +4,7 @@ import { unstable_update } from "@/auth";
 import { getUserById } from "@/data/user";
 import { currentUser } from "@/lib/auth";
 import { type UserLinkData, UserLinkSchema } from "@/lib/schemas";
-import { sanityClient } from "@/sanity/lib/client";
+import { sanityClient } from "@/sanity/lib/private-client";
 import { revalidatePath } from "next/cache";
 
 export type ServerActionResponse = {
@@ -38,7 +38,7 @@ export async function updateUserLink(
     // console.log("updateUserLink, user:", updatedUser);
 
     // unstable update in Beta version
-    unstable_update({
+    await unstable_update({
       user: {
         link: updatedUser.link,
       },
@@ -47,7 +47,6 @@ export async function updateUserLink(
     revalidatePath("/settings");
     return { status: "success", message: "User link updated!" };
   } catch (error) {
-    console.log("updateUserLink, error", error);
     return {
       status: "error",
       message: "Failed to update user link!",

@@ -27,7 +27,12 @@ export enum SponsorPlanStatus {
   SUBMITTING = "submitting",
 }
 
-export const getPublishable = (item: ItemInfo): boolean => {
+export const getPublishable = (item: {
+  pricePlan?: string;
+  freePlanStatus?: string;
+  proPlanStatus?: string;
+  sponsorPlanStatus?: string;
+}): boolean => {
   if (item.pricePlan === PricePlans.FREE) {
     return item.freePlanStatus === FreePlanStatus.APPROVED;
   }

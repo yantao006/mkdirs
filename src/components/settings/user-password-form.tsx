@@ -34,8 +34,8 @@ export function UserPasswordForm() {
   });
 
   const onSubmit = form.handleSubmit((values) => {
-    startTransition(() => {
-      updateUserPassword(values)
+    startTransition(async () => {
+      await updateUserPassword(values)
         .then((data) => {
           if (data.status === "error") {
             console.log("UserPasswordForm, error:", data.message);
@@ -110,11 +110,7 @@ export function UserPasswordForm() {
             </div>
           </div>
           <div className="flex justify-start">
-            <Button
-              type="submit"
-              disabled={isPending}
-              className=""
-            >
+            <Button type="submit" disabled={isPending} className="">
               {isPending ? (
                 <div className="flex items-center gap-2">
                   <Icons.spinner className="size-4 animate-spin" />

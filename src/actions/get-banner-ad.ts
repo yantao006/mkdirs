@@ -42,7 +42,6 @@ export async function getBannerAd(): Promise<ServerActionResponse> {
       data: null,
     };
   } catch (error) {
-    console.log("getBannerAd, error", error);
     return {
       status: "error",
       message: "Failed to fetch banner ad!",

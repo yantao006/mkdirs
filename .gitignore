@@ -12,6 +12,10 @@
 # next.js
 /.next/
 /out/
+/.open-next/
+/.wrangler/
+.dev.vars*
+/artifacts/
 
 # production
 /build

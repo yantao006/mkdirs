@@ -4,17 +4,19 @@ import { siteConfig } from "@/config/site";
 import { currentUser } from "@/lib/auth";
 import { constructMetadata } from "@/lib/metadata";
 import { FreePlanStatus, PricePlans, ProPlanStatus } from "@/lib/submission";
-import { sanityFetch } from "@/sanity/lib/fetch";
+import { privateFetch as sanityFetch } from "@/sanity/lib/private-client";
 import { itemByIdQuery } from "@/sanity/lib/queries";
 import type { ItemInfo } from "@/types";
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 
 export async function generateMetadata({
-  params,
+  params: paramsPromise,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }): Promise<Metadata | undefined> {
+  const params = await paramsPromise;
+
   return constructMetadata({
     title: "Submit your product (3/3)",
     description: "Submit your product (3/3) Review and publish product",
@@ -23,12 +25,15 @@ export async function generateMetadata({
 }
 
 export default async function PublishPage({
-  params,
-  searchParams,
+  params: paramsPromise,
+  searchParams: searchParamsPromise,
 }: {
-  params: { id: string };
-  searchParams?: { [key: string]: string | string[] | undefined };
+  params: Promise<{ id: string }>;
+  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
+  const params = await paramsPromise;
+  const searchParams = (await searchParamsPromise) || {};
+
   const user = await currentUser();
   if (!user) {
     console.error("PublishPage, user not found");
@@ -42,7 +47,6 @@ export default async function PublishPage({
   const item = await sanityFetch<ItemInfo>({
     query: itemByIdQuery,
     params: { id: id },
-    disableCache: true,
   });
 
   if (!item) {

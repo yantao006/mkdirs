@@ -9,21 +9,21 @@ import type { BlogCategoryMetadateQueryResult } from "@/sanity.types";
 import { sanityFetch } from "@/sanity/lib/fetch";
 import { blogCategoryMetadateQuery } from "@/sanity/lib/queries";
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 
 export async function generateMetadata({
-  params,
+  params: paramsPromise,
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }): Promise<Metadata | undefined> {
+  const params = await paramsPromise;
+
   const category = await sanityFetch<BlogCategoryMetadateQueryResult>({
     query: blogCategoryMetadateQuery,
     params: { slug: params.slug },
   });
   if (!category) {
-    console.warn(
-      `generateMetadata, category not found for slug: ${params.slug}`,
-    );
-    return;
+    notFound();
   }
 
   const ogImageUrl = new URL(`${siteConfig.url}/api/og`);
@@ -40,12 +40,15 @@ export async function generateMetadata({
 }
 
 export default async function BlogCategoryPage({
-  params,
-  searchParams,
+  params: paramsPromise,
+  searchParams: searchParamsPromise,
 }: {
-  params: { slug: string };
-  searchParams?: { [key: string]: string | string[] | undefined };
+  params: Promise<{ slug: string }>;
+  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
+  const params = await paramsPromise;
+  const searchParams = (await searchParamsPromise) || {};
+
   // console.log('BlogCategoryPage, searchParams', searchParams);
   const { page } = searchParams as { [key: string]: string };
   const currentPage = page ? Number(page) : 1;
@@ -73,7 +76,7 @@ export default async function BlogCategoryPage({
 
           <div className="mt-8 flex items-center justify-center">
             <CustomPagination
-              routePrefix={`/blog/${params.slug}`}
+              routePrefix={`/blog/category/${params.slug}`}
               totalPages={totalPages}
             />
           </div>

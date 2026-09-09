@@ -14,10 +14,12 @@ export const metadata = constructMetadata({
 });
 
 export default async function DashboardPage({
-  searchParams,
+  searchParams: searchParamsPromise,
 }: {
-  searchParams?: { [key: string]: string | string[] | undefined };
+  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
+  const searchParams = (await searchParamsPromise) || {};
+
   const user = await currentUser();
   const userId = user?.id;
   // console.log('DashboardPage, user:', user);

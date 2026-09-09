@@ -2,7 +2,7 @@
 
 import { getItemById } from "@/data/item";
 import { currentUser } from "@/lib/auth";
-import { sanityClient } from "@/sanity/lib/client";
+import { sanityClient } from "@/sanity/lib/private-client";
 
 export type ServerActionResponse = {
   status: "success" | "error";
@@ -10,7 +10,6 @@ export type ServerActionResponse = {
 };
 
 export async function unpublish(itemId: string): Promise<ServerActionResponse> {
-  console.log("unpublish, itemId:", itemId);
   try {
     const user = await currentUser();
     if (!user) {
@@ -40,7 +39,6 @@ export async function unpublish(itemId: string): Promise<ServerActionResponse> {
 
     return { status: "success", message: "Item unpublished!" };
   } catch (error) {
-    console.log("unpublish, error", error);
     return { status: "error", message: "Failed to unpublish item!" };
   }
 }

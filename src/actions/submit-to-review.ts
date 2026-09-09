@@ -5,7 +5,7 @@ import { currentUser } from "@/lib/auth";
 import { sendNotifySubmissionEmail } from "@/lib/mail";
 import { FreePlanStatus, PricePlans } from "@/lib/submission";
 import { getItemLinkInStudio, getItemStatusLinkInWebsite } from "@/lib/utils";
-import { sanityClient } from "@/sanity/lib/client";
+import { sanityClient } from "@/sanity/lib/private-client";
 
 export type ServerActionResponse = {
   status: "success" | "error";
@@ -15,7 +15,6 @@ export type ServerActionResponse = {
 export const submitToReview = async (
   itemId: string,
 ): Promise<ServerActionResponse> => {
-  console.log("submitToReview, itemId:", itemId);
   try {
     const user = await currentUser();
     if (!user) {
@@ -39,6 +38,7 @@ export const submitToReview = async (
 
     const result = await sanityClient
       .patch(itemId)
+      .ifRevisionId(item._rev)
       .set({
         pricePlan: PricePlans.FREE,
         freePlanStatus: FreePlanStatus.PENDING,
@@ -51,17 +51,23 @@ export const submitToReview = async (
 
     const statusLink = getItemStatusLinkInWebsite(itemId);
     const reviewLink = getItemLinkInStudio(itemId);
-    sendNotifySubmissionEmail(
-      user.name,
-      user.email,
-      result.name,
-      statusLink,
-      reviewLink,
-    );
-
-    return { status: "success", message: "Item submitted to review!" };
+    try {
+      await sendNotifySubmissionEmail(
+        user.name,
+        user.email,
+        result.name,
+        statusLink,
+        reviewLink,
+      );
+      return { status: "success", message: "Item submitted to review!" };
+    } catch {
+      return {
+        status: "success",
+        message:
+          "Item saved in the review queue, but email notification failed. Check your dashboard for review status.",
+      };
+    }
   } catch (error) {
-    console.log("submitToReview, error", error);
     return { status: "error", message: "Failed to submit item to review!" };
   }
 };

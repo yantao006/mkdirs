@@ -3,7 +3,9 @@
 import { signIn } from "@/auth";
 import { getUserByEmail } from "@/data/user";
 import { sendVerificationEmail } from "@/lib/mail";
+import { verifyPassword } from "@/lib/password";
 import { LoginSchema } from "@/lib/schemas";
+import { serviceConfigured } from "@/lib/service-config";
 import { generateVerificationToken } from "@/lib/tokens";
 import { DEFAULT_LOGIN_REDIRECT } from "@/routes";
 import { AuthError } from "next-auth";
@@ -19,6 +21,17 @@ export async function login(
   values: z.infer<typeof LoginSchema>,
   callbackUrl?: string | null,
 ): Promise<ServerActionResponse> {
+  if (!serviceConfigured("accounts"))
+    return {
+      status: "error",
+      message: "Sign in is awaiting account configuration",
+    };
+  const safeCallback =
+    callbackUrl?.startsWith("/") &&
+    !callbackUrl.startsWith("//") &&
+    !callbackUrl.includes("\\")
+      ? callbackUrl
+      : DEFAULT_LOGIN_REDIRECT;
   const validatedFields = LoginSchema.safeParse(values);
   if (!validatedFields.success) {
     return { status: "error", message: "Invalid fields!" };
@@ -26,38 +39,49 @@ export async function login(
 
   const { email, password } = validatedFields.data;
   const existingUser = await getUserByEmail(email);
-  if (!existingUser || !existingUser.email || !existingUser.password) {
-    return { status: "error", message: "User does not exist!" };
+  if (
+    !existingUser?.email ||
+    !existingUser.password ||
+    !(await verifyPassword(password, existingUser.password))
+  ) {
+    return { status: "error", message: "Invalid credentials!" };
   }
 
   if (!existingUser.emailVerified) {
-    const verificationToken = await generateVerificationToken(
-      existingUser.email,
-    );
-    await sendVerificationEmail(
-      verificationToken.identifier,
-      verificationToken.token,
-    );
-    return {
-      status: "success",
-      message: "Please check your email for verification",
-    };
+    try {
+      const verificationToken = await generateVerificationToken(
+        existingUser.email,
+      );
+      await sendVerificationEmail(
+        verificationToken.identifier,
+        verificationToken.token,
+      );
+      return {
+        status: "success",
+        message: "Please check your email for verification",
+      };
+    } catch {
+      return {
+        status: "error",
+        message:
+          "Verification email could not be sent. Your account is not yet verified; please retry later.",
+      };
+    }
   }
 
   try {
-    console.log("login, start signIn");
     // https://youtu.be/1MTyCvS05V4?t=9828
     await signIn("credentials", {
       email,
       password,
       redirect: false,
-      redirectTo: callbackUrl || DEFAULT_LOGIN_REDIRECT,
+      redirectTo: safeCallback,
     });
 
     return {
       status: "success",
       message: "Login success",
-      redirectUrl: callbackUrl || DEFAULT_LOGIN_REDIRECT,
+      redirectUrl: safeCallback,
     };
   } catch (error) {
     // console.error("login, error:", error);

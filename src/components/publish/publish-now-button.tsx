@@ -22,7 +22,7 @@ export function PublishNowButton({ item }: PublishNowButtonProps) {
 
   const publishAction = () => {
     startTransition(async () => {
-      publish(item._id)
+      await publish(item._id)
         .then((data) => {
           if (data.status === "success") {
             console.log("publishAction, success:", data.message);

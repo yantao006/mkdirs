@@ -8,6 +8,7 @@ import {
   ITEMS_PER_PAGE,
   SORT_FILTER_LIST,
 } from "@/lib/constants";
+import { normalizePage, normalizeSearchParams } from "@/lib/directory-query";
 import { constructMetadata } from "@/lib/metadata";
 import type {
   CategoryQueryResult,
@@ -16,22 +17,20 @@ import type {
 import { sanityFetch } from "@/sanity/lib/fetch";
 import { categoryQuery, sponsorItemListQuery } from "@/sanity/lib/queries";
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 
 export async function generateMetadata({
-  params,
+  params: paramsPromise,
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }): Promise<Metadata | undefined> {
+  const params = await paramsPromise;
+
   const category = await sanityFetch<CategoryQueryResult>({
     query: categoryQuery,
     params: { slug: params.slug },
   });
-  if (!category) {
-    console.warn(
-      `generateMetadata, category not found for slug: ${params.slug}`,
-    );
-    return;
-  }
+  if (!category) notFound();
 
   const ogImageUrl = new URL(`${siteConfig.url}/api/og`);
   ogImageUrl.searchParams.append("title", category.name);
@@ -47,12 +46,20 @@ export async function generateMetadata({
 }
 
 export default async function CategoryPage({
-  params,
-  searchParams,
+  params: paramsPromise,
+  searchParams: searchParamsPromise,
 }: {
-  params: { slug: string };
-  searchParams?: { [key: string]: string | string[] | undefined };
+  params: Promise<{ slug: string }>;
+  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
+  const params = await paramsPromise;
+  const searchParams = normalizeSearchParams(await searchParamsPromise);
+  const category = await sanityFetch<CategoryQueryResult>({
+    query: categoryQuery,
+    params: { slug: params.slug },
+  });
+  if (!category) notFound();
+
   const sponsorItems =
     (await sanityFetch<SponsorItemListQueryResult>({
       query: sponsorItemListQuery,
@@ -64,7 +71,7 @@ export default async function CategoryPage({
   const { sort, page } = searchParams as { [key: string]: string };
   const { sortKey, reverse } =
     SORT_FILTER_LIST.find((item) => item.slug === sort) || DEFAULT_SORT;
-  const currentPage = page ? Number(page) : 1;
+  const currentPage = normalizePage(page);
   const { items, totalCount } = await getItems({
     category: params.slug,
     sortKey,
@@ -82,6 +89,7 @@ export default async function CategoryPage({
 
   return (
     <div>
+      <h2 className="mb-6 text-2xl font-semibold">{category.name}</h2>
       {/* when no items are found */}
       {items?.length === 0 && <EmptyGrid />}
 

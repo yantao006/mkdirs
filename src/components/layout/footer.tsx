@@ -7,7 +7,6 @@ import Link from "next/link";
 import type * as React from "react";
 import Container from "../container";
 import { Logo } from "../logo";
-import BuiltWithButton from "../shared/built-with-button";
 
 export function Footer({ className }: React.HTMLAttributes<HTMLElement>) {
   return (
@@ -21,7 +20,7 @@ export function Footer({ className }: React.HTMLAttributes<HTMLElement>) {
               <span className="text-xl font-bold">{siteConfig.name}</span>
             </div>
 
-            <p className="text-muted-foreground text-base p4-4 md:pr-12">
+            <p className="text-muted-foreground text-base md:pr-12">
               {siteConfig.tagline}
             </p>
 
@@ -72,7 +71,10 @@ export function Footer({ className }: React.HTMLAttributes<HTMLElement>) {
               )}
             </div>
 
-            <BuiltWithButton />
+            <p className="text-sm text-muted-foreground">
+              Independent directory built from the open-source Mkdirs template.
+              Not affiliated with the template authors.
+            </p>
           </div>
         </div>
 
@@ -107,7 +109,7 @@ export function Footer({ className }: React.HTMLAttributes<HTMLElement>) {
       <div className="border-t py-4">
         <Container className="flex items-center justify-between">
           <span className="text-muted-foreground text-sm">
-            Copyright &copy; {new Date().getFullYear()} All Rights Reserved.
+            mkdirs · Curated public resources
           </span>
 
           <div className="flex items-center gap-3">
