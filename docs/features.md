@@ -9,7 +9,7 @@ No third-party success response is simulated when configuration is missing.
 | Directory, filters, search, stable pagination, details | `src/data/item.ts`, `src/lib/directory-query.ts`, public routes | Verified on the Cloudflare directory release |
 | Authentication, verification, reset, sessions, settings | `src/auth.ts`, `src/auth.config.ts`, auth actions and routes | Restored; private storage implemented; email/provider configuration and live account tests pending |
 | User dashboard, submit, edit, review, publish/unpublish | Protected routes, submission actions, `src/lib/submission.ts` | Restored with owner/revision guards, request-idempotent submission and authenticated bounded uploads; live workflow tests pending |
-| Paid and sponsored submissions, checkout, customer portal | Payment actions, `src/app/api/webhook/route.ts` | Restored; product-specific Stripe resources and approved price policy required |
+| Paid and sponsored submissions, checkout, customer portal | Payment actions, `src/app/api/webhook/route.ts` | Pro test-mode checkout, cancel, payment and webhook state verified on yanbao.space; Sponsor payment and customer portal still need E2E verification; live charges not enabled by this acceptance |
 | Transactional email and newsletter | `src/lib/mail.ts`, newsletter actions | Restored; verified sender, recipient and audience required |
 | AI-assisted website submission | `src/actions/fetch-website.ts` | Restored; approved provider, current model, credentials and test budget required |
 | Blog, categories, authors, custom pages | Public blog routes and Sanity schemas | Routes restored; initial editorial content and final verification pending |
@@ -36,6 +36,15 @@ Never borrow another product's keys, merchant, content database, OAuth applicati
 Template prices, backlink policies, review-time guarantees, promotion promises, and author contact details are not this product's operating policy.
 Paid prices and service promises require explicit product approval before publication.
 Use isolated Stripe test resources for integration verification; no real charges are implied by deployment authorization.
+
+## Checkout integration
+
+`src/lib/stripe.ts` uses the fetch HTTP client for Cloudflare Workers.
+`src/lib/checkout-policy.ts` explicitly disables Managed Payments per session, preserving ordinary Checkout even when the merchant enables Managed Payments by default.
+Do not invent product tax codes or change merchant-wide settings to work around that default.
+The checkout idempotency key versions the request contract; bump that version when changing request parameters to avoid conflicting with Stripe's existing request records.
+The action reports the failing stage and safe diagnostic categories, never raw upstream messages or private customer data.
+See `docs/checkout-e2e.md` for production test-mode acceptance evidence.
 
 ## Private data within Sanity Free
 

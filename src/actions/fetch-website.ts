@@ -80,8 +80,7 @@ export async function fetchWebsite(url: string): Promise<ServerActionResponse> {
       data,
     };
   } catch (error) {
-    const message =
-      error instanceof Error ? error.message.slice(0, 180) : "";
+    const message = error instanceof Error ? error.message.slice(0, 180) : "";
     return {
       status: "error",
       message: message || "Failed to fetch website info",

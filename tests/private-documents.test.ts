@@ -23,12 +23,8 @@ test("every identity, token and order ID uses a private random-ID subpath", () =
     assert.ok(!ids.has(id));
     ids.add(id);
   }
-  assert.ok(
-    isPrivateDocumentId(`mkdirsPrivate.user.${"ab".repeat(32)}`),
-  );
-  assert.ok(
-    isPrivateDocumentId(`mkdirsPrivate.account.${"cd".repeat(32)}`),
-  );
+  assert.ok(isPrivateDocumentId(`mkdirsPrivate.user.${"ab".repeat(32)}`));
+  assert.ok(isPrivateDocumentId(`mkdirsPrivate.account.${"cd".repeat(32)}`));
   for (const id of [
     "user-public",
     "drafts.user",
