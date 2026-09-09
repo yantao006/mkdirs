@@ -80,9 +80,10 @@ export async function fetchWebsite(url: string): Promise<ServerActionResponse> {
       data,
     };
   } catch (error) {
+    const message = error instanceof Error ? error.message.slice(0, 180) : "";
     return {
       status: "error",
-      message: "Failed to fetch website info",
+      message: message || "Failed to fetch website info",
     };
   }
 }
@@ -110,37 +111,34 @@ const fetchWebsiteInfo = async (url: string) => {
   });
 
   if (websiteInfo.image && websiteInfo.icon) {
-    // Fetch icon and image
-    const [iconResponse, imageResponse] = await Promise.all([
-      fetchPublicResource(websiteInfo.icon, 5 * 1024 * 1024),
-      fetchPublicResource(websiteInfo.image, 5 * 1024 * 1024),
-    ]);
-
-    const [iconArrayBuffer, imageArrayBuffer] = await Promise.all([
-      iconResponse.arrayBuffer(),
-      imageResponse.arrayBuffer(),
-    ]);
-
-    // Convert ArrayBuffer to Buffer for Sanity upload
-    const [iconBuffer, imageBuffer] = [
-      Buffer.from(iconArrayBuffer),
-      Buffer.from(imageArrayBuffer),
-    ];
-
-    // Upload icon and image to sanity
-    const [iconAsset, imageAsset] = await Promise.all([
-      sanityClient.assets.upload("image", iconBuffer, {
-        filename: `${slugify(websiteInfo.name)}_logo.png`,
-      }),
-      sanityClient.assets.upload("image", imageBuffer, {
-        filename: `${slugify(websiteInfo.name)}_image.png`,
-      }),
-    ]);
-
-    websiteInfo.icon = iconAsset.url;
-    websiteInfo.image = imageAsset.url;
-    websiteInfo.iconId = iconAsset._id;
-    websiteInfo.imageId = imageAsset._id;
+    try {
+      const [iconResponse, imageResponse] = await Promise.all([
+        fetchPublicResource(websiteInfo.icon, 5 * 1024 * 1024),
+        fetchPublicResource(websiteInfo.image, 5 * 1024 * 1024),
+      ]);
+      const [iconArrayBuffer, imageArrayBuffer] = await Promise.all([
+        iconResponse.arrayBuffer(),
+        imageResponse.arrayBuffer(),
+      ]);
+      const [iconBuffer, imageBuffer] = [
+        Buffer.from(iconArrayBuffer),
+        Buffer.from(imageArrayBuffer),
+      ];
+      const [iconAsset, imageAsset] = await Promise.all([
+        sanityClient.assets.upload("image", iconBuffer, {
+          filename: `${slugify(websiteInfo.name)}_logo.png`,
+        }),
+        sanityClient.assets.upload("image", imageBuffer, {
+          filename: `${slugify(websiteInfo.name)}_image.png`,
+        }),
+      ]);
+      websiteInfo.icon = iconAsset.url;
+      websiteInfo.image = imageAsset.url;
+      websiteInfo.iconId = iconAsset._id;
+      websiteInfo.imageId = imageAsset._id;
+    } catch {
+      // Text fields remain usable when screenshot or logo fetch fails.
+    }
   }
 
   return websiteInfo;
@@ -159,7 +157,9 @@ const fetchWebsiteInfoWithAI = async (url: string) => {
     const availableCategories = categories.map((cat) => cat.name);
     const availableTags = tags.map((tag) => tag.name);
 
-    const response = await fetchPublicResource(url, 256 * 1024);
+    const response = await fetchPublicResource(url, 48 * 1024, {
+      truncate: true,
+    });
     // TODO: we need to convert htmlContent to simple content for AI to analyze (save time and cost)
     // TODO: if the content is too long, error will be thrown, so sometimes AI submit will fail
     // Google Gemini model support more tokens than DeepSeek model, so we prefer Google Gemini model
@@ -260,6 +260,8 @@ const fetchWebsiteInfoWithAI = async (url: string) => {
 
     return result;
   } catch (error) {
-    return null;
+    throw error instanceof Error
+      ? error
+      : new Error("Failed to analyze the website");
   }
 };

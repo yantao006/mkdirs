@@ -2,8 +2,11 @@
 
 import { createCheckoutSession } from "@/actions/create-checkout-session";
 import { Button } from "@/components/ui/button";
-import { siteConfig } from "@/config/site";
-import { PricePlans, ProPlanStatus, SponsorPlanStatus } from "@/lib/submission";
+import {
+  PricePlans,
+  SponsorPlanStatus,
+  canStartPaidCheckout,
+} from "@/lib/submission";
 import { cn } from "@/lib/utils";
 import type { ItemInfo, PricePlan } from "@/types";
 import {
@@ -34,38 +37,37 @@ export function SponsorPlanButton({
   const [isPending, startTransition] = useTransition();
 
   const handleCreateCheckoutSession = () => {
+    if (!item?._id || !pricePlan.stripePriceId) {
+      toast.error("This payment plan is not configured");
+      return;
+    }
     startTransition(async () => {
-      await createCheckoutSession(
-        item._id,
-        pricePlan.stripePriceId,
-        PricePlans.SPONSOR,
-      )
-        .then((data) => {
-          console.log("createCheckoutSession, data:", data);
-          // already redirected to stripe checkout page in server action
-        })
-        .catch((error) => {
-          console.error("createCheckoutSession, error:", error);
-          toast.error("Failed to create checkout session");
-        });
+      try {
+        const data = await createCheckoutSession(
+          item._id,
+          pricePlan.stripePriceId,
+          PricePlans.SPONSOR,
+        );
+        if (data?.status === "error") {
+          toast.error(data.message || "Failed to create checkout session");
+          return;
+        }
+        if (data?.stripeUrl) {
+          window.location.assign(data.stripeUrl);
+          return;
+        }
+        toast.error("Failed to create checkout session");
+      } catch (error) {
+        console.error("createCheckoutSession, error:", error);
+        toast.error("Failed to create checkout session");
+      }
     });
   };
 
   const handleClick = () => {
-    console.log(
-      "SponsorPlanButton, handleClick, item.sponsorPlanStatus:",
-      item?.sponsorPlanStatus,
-    );
     if (!item) {
-      // no specific item in pricing page
       router.push("/submit");
-    } else if (
-      item.sponsorPlanStatus === null ||
-      item.sponsorPlanStatus === SponsorPlanStatus.SUBMITTING ||
-      item.sponsorPlanStatus === SponsorPlanStatus.PENDING
-    ) {
-      // maybe in pro plan or free plan before
-      console.log("SponsorPlanButton, handleClick, creating checkout session");
+    } else if (canStartPaidCheckout(item.sponsorPlanStatus)) {
       handleCreateCheckoutSession();
     } else if (item.sponsorPlanStatus === SponsorPlanStatus.SUCCESS) {
       if (item.publishDate) {

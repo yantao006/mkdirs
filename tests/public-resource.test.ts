@@ -20,6 +20,11 @@ test("AI fetch URLs reject local hosts, IP literals, alternate ports and credent
     publicResourceUrl("https://react.dev/learn").hostname,
     "react.dev",
   );
+  assert.equal(
+    publicResourceUrl("seedream-5.site").href,
+    "https://seedream-5.site/",
+  );
+  assert.equal(publicResourceUrl(" seedream-5.site ").protocol, "https:");
 });
 
 test("DNS results must be public addresses, not private, mapped or malformed addresses", () => {

@@ -27,6 +27,15 @@ export enum SponsorPlanStatus {
   SUBMITTING = "submitting",
 }
 
+/** Free submissions leave paid-plan status unset; treat that as eligible to start checkout. */
+export function canStartPaidCheckout(status?: string | null) {
+  return (
+    !status ||
+    status === ProPlanStatus.SUBMITTING ||
+    status === ProPlanStatus.PENDING
+  );
+}
+
 export const getPublishable = (item: {
   pricePlan?: string;
   freePlanStatus?: string;
